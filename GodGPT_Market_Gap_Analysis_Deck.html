@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GodGPT Market Gap Analysis</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0a0a0f;
+            --bg-card: rgba(255,255,255,0.03);
+            --bg-card-solid: #141419;
+            --accent-red: #FF4D4D;
+            --accent-green: #00D26A;
+            --accent-cyan: #00E5FF;
+            --accent-purple: #A855F7;
+            --accent-yellow: #FFD93D;
+            --text-primary: #FFFFFF;
+            --text-secondary: rgba(255,255,255,0.7);
+            --text-muted: rgba(255,255,255,0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .presentation-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: var(--accent-cyan);
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 20px;
+            right: 100px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            z-index: 1000;
+            font-weight: 500;
+        }
+
+        .slides-wrapper {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            padding: 100px 80px;
+            display: none;
+            opacity: 0;
+            transform: translateX(100px);
+            transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .slide.active {
+            display: block;
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .slide h1 {
+            font-size: 52px;
+            font-weight: 800;
+            margin-bottom: 24px;
+            line-height: 1.2;
+        }
+
+        .slide h1 .serif-accent {
+            font-family: 'Instrument Serif', serif;
+            font-style: italic;
+            font-weight: 400;
+        }
+
+        .slide h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin: 32px 0 16px;
+            color: var(--accent-cyan);
+        }
+
+        .slide h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 24px 0 12px;
+        }
+
+        .slide .eyebrow {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        .card {
+            background: var(--bg-card-solid);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 16px 0;
+        }
+
+        .card-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .card-value {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 24px 0;
+            background: var(--bg-card-solid);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        table th {
+            background: rgba(255,255,255,0.05);
+            padding: 16px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--accent-cyan);
+        }
+
+        table td {
+            padding: 16px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            font-size: 14px;
+        }
+
+        .insight-box {
+            background: rgba(168, 85, 247, 0.1);
+            border-left: 4px solid var(--accent-purple);
+            padding: 20px;
+            margin: 24px 0;
+            border-radius: 8px;
+        }
+
+        .insight-box p {
+            margin: 0;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .metric-card {
+            background: var(--bg-card-solid);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .metric-card .label {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .metric-card .value {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--accent-green);
+        }
+
+        .gap-item {
+            background: var(--bg-card-solid);
+            padding: 20px;
+            margin: 16px 0;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-cyan);
+        }
+
+        .gap-item h4 {
+            font-size: 18px;
+            margin-bottom: 12px;
+            color: var(--accent-cyan);
+        }
+
+        .checkmark {
+            color: var(--accent-green);
+            margin-right: 8px;
+        }
+
+        .x-mark {
+            color: var(--accent-red);
+            margin-right: 8px;
+        }
+
+        .warning {
+            color: var(--accent-yellow);
+            margin-right: 8px;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .nav-button {
+            background: var(--bg-card-solid);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-primary);
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-button:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-2px);
+        }
+
+        .nav-button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .nav-dots {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .nav-dot.active {
+            background: var(--accent-cyan);
+            width: 24px;
+            border-radius: 4px;
+        }
+
+        .highlight {
+            color: var(--accent-cyan);
+            font-weight: 700;
+        }
+
+        .star-rating {
+            color: var(--accent-yellow);
+            font-size: 18px;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        ul li {
+            padding: 8px 0;
+            padding-left: 24px;
+            position: relative;
+        }
+
+        ul li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: var(--accent-cyan);
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin: 24px 0;
+        }
+
+        @media (max-width: 768px) {
+            .slide {
+                padding: 60px 24px;
+            }
+
+            .slide h1 {
+                font-size: 32px;
+            }
+
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+
+            .slide-counter {
+                right: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <div class="progress-bar" id="progressBar"></div>
+        <div class="slide-counter" id="slideCounter">1 / 7</div>
+        
+        <div class="slides-wrapper">
+            <!-- SLIDE 1: The Market Gap -->
+            <div class="slide active">
+                <div class="eyebrow">EXECUTIVE SUMMARY</div>
+                <h1>The Market <span class="serif-accent">Gap</span></h1>
+                
+                <div class="card" style="border-left: 4px solid var(--accent-green); margin: 32px 0;">
+                    <div style="font-size: 24px; font-weight: 700; margin-bottom: 16px; color: var(--accent-green);">
+                        ✅ SIGNIFICANT GAP EXISTS
+                    </div>
+                    <p style="font-size: 18px; line-height: 1.6; margin-bottom: 16px;">
+                        <strong>No app currently combines Alignment + Friend Compatibility + Personal Goals in an integrated spiritual wellness platform.</strong>
+                    </p>
+                    <p style="font-size: 20px; font-weight: 700; color: var(--accent-cyan);">
+                        Lumen will be the first.
+                    </p>
+                </div>
+
+                <div class="metric-grid">
+                    <div class="metric-card">
+                        <div class="label">Market Gap Score</div>
+                        <div class="value">9/10</div>
+                        <div class="star-rating">⭐⭐⭐⭐⭐</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="label">Total Addressable Market</div>
+                        <div class="value">$620M-$1.165B+</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="label">Direct Competitors</div>
+                        <div class="value">0</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="label">Competitive Advantage</div>
+                        <div class="value">5/5</div>
+                    </div>
+                </div>
+
+                <div class="insight-box">
+                    <p>
+                        <strong>💡 The Opportunity:</strong> At current market growth rates, the integrated alignment platform space represents a <span class="highlight">$620M-$1.165B+ addressable market</span> with <span class="highlight">zero direct competitors</span>.
+                    </p>
+                </div>
+            </div>
+
+            <!-- SLIDE 2: Market Size & Growth -->
+            <div class="slide">
+                <div class="eyebrow">MARKET OPPORTUNITY</div>
+                <h1>Market Size & <span class="serif-accent">Growth</span></h1>
+                
+                <div class="two-column">
+                    <div class="card">
+                        <div class="card-label">Personal Goal Setting Apps</div>
+                        <div class="card-value" style="color: var(--accent-green);">$1.5B → $4.2B</div>
+                        <div style="margin-top: 12px; color: var(--text-secondary);">
+                            <div>2024: $1.5B USD</div>
+                            <div>2033: $4.2B USD</div>
+                            <div style="color: var(--accent-cyan); margin-top: 8px; font-weight: 600;">
+                                CAGR: 15.5% annually
+                            </div>
+                        </div>
+                        <div style="margin-top: 16px; font-size: 14px; color: var(--text-muted);">
+                            <div>• North America: 35% (largest)</div>
+                            <div>• Europe: 30%</div>
+                            <div>• Asia Pacific: 25% (fastest: 18% growth)</div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-label">Compatibility/Social Apps</div>
+                        <div class="card-value" style="color: var(--accent-green);">$9.4B → $18.1B</div>
+                        <div style="margin-top: 12px; color: var(--text-secondary);">
+                            <div>2023: $9.4B USD</div>
+                            <div>2033: $18.1B USD</div>
+                            <div style="color: var(--accent-cyan); margin-top: 8px; font-weight: 600;">
+                                CAGR: 6.8% annually
+                            </div>
+                        </div>
+                        <div style="margin-top: 16px; font-size: 14px; color: var(--text-muted);">
+                            <div>• Growing non-romantic connection demand</div>
+                            <div>• Gap: Friendship compatibility (not just dating)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" style="border-left: 4px solid var(--accent-purple); margin-top: 24px;">
+                    <div class="card-label">Combined Market Opportunity</div>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 16px;">
+                        <div>
+                            <div style="font-size: 12px; color: var(--text-muted);">Goal Setting Segment</div>
+                            <div style="font-size: 20px; font-weight: 700; color: var(--accent-cyan);">$150M-$225M</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 12px; color: var(--text-muted);">Compatibility Segment</div>
+                            <div style="font-size: 20px; font-weight: 700; color: var(--accent-cyan);">$470M-$940M</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 12px; color: var(--text-muted);">Combined TAM</div>
+                            <div style="font-size: 24px; font-weight: 800; color: var(--accent-green);">$620M-$1.165B+</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 3: Competitive Landscape -->
+            <div class="slide">
+                <div class="eyebrow">COMPETITIVE ANALYSIS</div>
+                <h1>Competitive <span class="serif-accent">Landscape</span></h1>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Competitors</th>
+                            <th>What They Offer</th>
+                            <th>Gap</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Goal Setting</strong></td>
+                            <td>Todoist, Strides, Notion</td>
+                            <td>Task management, goal tracking</td>
+                            <td><span class="x-mark">❌</span>No alignment insights<br>
+                                <span class="x-mark">❌</span>No compatibility<br>
+                                <span class="x-mark">❌</span>No spiritual wellness</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Compatibility</strong></td>
+                            <td>AstroYou, TetraOm, Co-Star</td>
+                            <td>Relationship compatibility</td>
+                            <td><span class="x-mark">❌</span>No alignment dashboard<br>
+                                <span class="x-mark">❌</span>No goal tracking<br>
+                                <span class="x-mark">❌</span>Romantic focus only</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Wellness</strong></td>
+                            <td>Headspace, Calm, Daylio</td>
+                            <td>Meditation, mood tracking</td>
+                            <td><span class="x-mark">❌</span>No compatibility<br>
+                                <span class="x-mark">❌</span>No goal tracking<br>
+                                <span class="x-mark">❌</span>Individual focus</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="insight-box" style="margin-top: 32px;">
+                    <p>
+                        <strong>💡 Key Finding:</strong> No app combines Alignment + Compatibility + Goals. Users must use <span class="highlight">3+ separate apps</span> to get all three features. <span class="highlight">Lumen is the first integrated solution.</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- SLIDE 4: The Four Market Gaps -->
+            <div class="slide">
+                <div class="eyebrow">MARKET GAP IDENTIFICATION</div>
+                <h1>The Four Market <span class="serif-accent">Gaps</span></h1>
+                
+                <div class="gap-item" style="border-left-color: var(--accent-yellow);">
+                    <h4>⭐ Gap #1: No Integrated Alignment + Compatibility + Goals Platform (PRIMARY)</h4>
+                    <p style="margin: 12px 0; color: var(--text-secondary);">
+                        No app combines personal alignment dashboard with friend compatibility and goal tracking. Users must use 3+ separate apps.
+                    </p>
+                    <div style="margin-top: 16px;">
+                        <div><span class="checkmark">✅</span> Alignment Dashboard (primary)</div>
+                        <div><span class="checkmark">✅</span> Friend Compatibility (primary)</div>
+                        <div><span class="checkmark">✅</span> Personal Goals (primary)</div>
+                        <div><span class="checkmark">✅</span> All three integrated with AI</div>
+                    </div>
+                    <div style="margin-top: 12px; color: var(--accent-yellow); font-weight: 600;">
+                        Competitive Advantage: ⭐⭐⭐⭐⭐ (5/5 - Unique positioning)
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 24px;">
+                    <div class="gap-item" style="border-left-color: var(--accent-cyan);">
+                        <h4>Gap #2: No Friend Compatibility with Alignment</h4>
+                        <p style="font-size: 13px; color: var(--text-secondary); margin-top: 8px;">
+                            Most apps focus on romantic relationships. No app offers friend compatibility with alignment insights.
+                        </p>
+                        <div style="margin-top: 12px; color: var(--accent-cyan); font-weight: 600; font-size: 14px;">
+                            Advantage: ⭐⭐⭐⭐ (4/5)
+                        </div>
+                    </div>
+
+                    <div class="gap-item" style="border-left-color: var(--accent-purple);">
+                        <h4>Gap #3: No Goal Tracking with Alignment</h4>
+                        <p style="font-size: 13px; color: var(--text-secondary); margin-top: 8px;">
+                            Goal apps track progress but don't show alignment. No app shows how goals affect personal alignment.
+                        </p>
+                        <div style="margin-top: 12px; color: var(--accent-purple); font-weight: 600; font-size: 14px;">
+                            Advantage: ⭐⭐⭐⭐ (4/5)
+                        </div>
+                    </div>
+
+                    <div class="gap-item" style="border-left-color: var(--accent-green);">
+                        <h4>Gap #4: No Spiritual Wellness with Social</h4>
+                        <p style="font-size: 13px; color: var(--text-secondary); margin-top: 8px;">
+                            Spiritual wellness apps focus on individual experience. No platform offers friend compatibility.
+                        </p>
+                        <div style="margin-top: 12px; color: var(--accent-green); font-weight: 600; font-size: 14px;">
+                            Advantage: ⭐⭐⭐⭐ (4/5)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 5: Competitive Differentiation -->
+            <div class="slide">
+                <div class="eyebrow">COMPETITIVE POSITIONING</div>
+                <h1>Competitive <span class="serif-accent">Differentiation</span></h1>
+                
+                <div class="card" style="border-left: 4px solid var(--accent-cyan); margin-bottom: 32px;">
+                    <h3 style="margin-top: 0; color: var(--accent-cyan);">Lumen's Unique Value Proposition:</h3>
+                    <p style="font-size: 20px; line-height: 1.6; margin-top: 16px;">
+                        <em>"The only spiritual wellness platform that combines personal alignment, friend compatibility, and goal tracking in one integrated experience."</em>
+                    </p>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Lumen</th>
+                            <th>AstroYou</th>
+                            <th>TetraOm</th>
+                            <th>Goal Apps</th>
+                            <th>Wellness Apps</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Alignment Dashboard</strong></td>
+                            <td><span class="checkmark">✅</span> Primary</td>
+                            <td><span class="x-mark">❌</span> No</td>
+                            <td><span class="x-mark">❌</span> No</td>
+                            <td><span class="x-mark">❌</span> No</td>
+                            <td><span class="warning">⚠️</span> Partial</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Friend Compatibility</strong></td>
+                            <td><span class="checkmark">✅</span> Primary</td>
+                            <td><span class="warning">⚠️</span> Romantic only</td>
+                            <td><span class="warning">⚠️</span> One feature</td>
+                            <td><span class="x-mark">❌</span> No</td>
+                            <td><span class="x-mark">❌</span> No</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Personal Goals</strong></td>
+                            <td><span class="checkmark">✅</span> Primary</td>
+                            <td><span class="x-mark">❌</span> No</td>
+                            <td><span class="x-mark">❌</span> No</td>
+                            <td><span class="checkmark">✅</span> Primary</td>
+                            <td><span class="x-mark">❌</span> No</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Integration</strong></td>
+                            <td><span class="checkmark">✅</span> All 3 integrated</td>
+                            <td><span class="x-mark">❌</span> No</td>
+                            <td><span class="x-mark">❌</span> No</td>
+                            <td><span class="x-mark">❌</span> No</td>
+                            <td><span class="x-mark">❌</span> No</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="insight-box" style="margin-top: 24px;">
+                    <p>
+                        <strong>💡 The Gap = The Opportunity:</strong> Lumen is the <span class="highlight">ONLY app</span> that combines all three primary features (Alignment, Compatibility, Goals) in an integrated platform. <span class="highlight">First-mover advantage</span> in a $620M-$1.165B+ market.
+                    </p>
+                </div>
+            </div>
+
+            <!-- SLIDE 6: Market Opportunity & Validation -->
+            <div class="slide">
+                <div class="eyebrow">MARKET VALIDATION</div>
+                <h1>Market Opportunity & <span class="serif-accent">Validation</span></h1>
+                
+                <div class="two-column">
+                    <div>
+                        <h3>TAM / SAM / SOM</h3>
+                        <div class="card" style="margin: 16px 0;">
+                            <div class="card-label">Total Addressable Market (TAM)</div>
+                            <div class="card-value" style="color: var(--accent-green);">$620M-$1.165B+</div>
+                        </div>
+                        <div class="card" style="margin: 16px 0;">
+                            <div class="card-label">Serviceable Market (SAM)</div>
+                            <div class="card-value" style="color: var(--accent-cyan);">$100M-$200M</div>
+                            <div style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">
+                                10-20% of TAM (English-speaking, 25-45 age)
+                            </div>
+                        </div>
+                        <div class="card" style="margin: 16px 0;">
+                            <div class="card-label">5-Year Revenue Potential (SOM)</div>
+                            <div class="card-value" style="color: var(--accent-purple);">$1M-$10M</div>
+                            <div style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">
+                                Year 1: 0.1% share = $100K-$200K<br>
+                                Year 5: 5% share = $5M-$10M
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3>Validation Evidence</h3>
+                        <div class="card" style="border-left: 4px solid var(--accent-green); margin: 16px 0;">
+                            <div style="font-size: 18px; font-weight: 700; margin-bottom: 16px; color: var(--accent-green);">
+                                ✅ YES - CONFIRMED
+                            </div>
+                            <ul style="font-size: 14px; line-height: 1.8;">
+                                <li>No integrated solution exists</li>
+                                <li>Market growing: 15.5% CAGR (goals), 6.8% (compatibility)</li>
+                                <li>Clear user need (fragmented solutions)</li>
+                                <li>First-mover advantage (0 direct competitors)</li>
+                                <li>Strong differentiation (unique positioning)</li>
+                                <li>Viral potential (friend sharing)</li>
+                                <li>Large market size ($620M-$1.165B+ TAM)</li>
+                            </ul>
+                        </div>
+                        <div style="text-align: center; margin-top: 24px;">
+                            <div style="font-size: 32px; font-weight: 800; color: var(--accent-green);">
+                                Market Gap Score: 9/10
+                            </div>
+                            <div class="star-rating" style="font-size: 24px; margin-top: 8px;">⭐⭐⭐⭐⭐</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="insight-box" style="margin-top: 32px;">
+                    <p>
+                        <strong>💡 Recommendation:</strong> <span class="highlight">✅ PROCEED WITH CONFIDENCE</span> — This positioning fills a significant market gap and provides strong competitive differentiation. The market opportunity is substantial, competition is fragmented, and user need is clear.
+                    </p>
+                </div>
+            </div>
+
+            <!-- SLIDE 7: Next Steps & Bottom Line -->
+            <div class="slide">
+                <div class="eyebrow">ACTION PLAN</div>
+                <h1>Next Steps & <span class="serif-accent">Bottom Line</span></h1>
+                
+                <div class="card" style="border-left: 4px solid var(--accent-cyan); margin-bottom: 32px;">
+                    <h3 style="margin-top: 0; color: var(--accent-cyan);">
+                        The Market Gap is Real. The Opportunity is Significant. The Timing is Right.
+                    </h3>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>Immediate Actions</h3>
+                        <div class="card" style="margin: 16px 0;">
+                            <div style="font-weight: 600; margin-bottom: 12px; color: var(--accent-cyan);">Product Team</div>
+                            <ul style="font-size: 14px;">
+                                <li>Validate feature priorities</li>
+                                <li>Design integrated UX</li>
+                                <li>Plan development roadmap</li>
+                            </ul>
+                        </div>
+                        <div class="card" style="margin: 16px 0;">
+                            <div style="font-weight: 600; margin-bottom: 12px; color: var(--accent-purple);">Marketing Team</div>
+                            <ul style="font-size: 14px;">
+                                <li>Position as "first integrated platform"</li>
+                                <li>Emphasize market gap</li>
+                                <li>Create integration messaging</li>
+                            </ul>
+                        </div>
+                        <div class="card" style="margin: 16px 0;">
+                            <div style="font-weight: 600; margin-bottom: 12px; color: var(--accent-green);">Leadership</div>
+                            <ul style="font-size: 14px;">
+                                <li>Approve market opportunity</li>
+                                <li>Allocate resources</li>
+                                <li>Set penetration goals</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3>Key Takeaways</h3>
+                        <div class="metric-grid" style="grid-template-columns: 1fr;">
+                            <div class="metric-card">
+                                <div class="label">Market Gap Score</div>
+                                <div class="value">9/10 ⭐⭐⭐⭐⭐</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="label">Total Addressable Market</div>
+                                <div class="value">$620M-$1.165B+</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="label">Serviceable Market</div>
+                                <div class="value">$100M-$200M</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="label">5-Year Revenue Potential</div>
+                                <div class="value">$1M-$10M</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="label">Direct Competitors</div>
+                                <div class="value">0 (first-mover)</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="label">Competitive Advantage</div>
+                                <div class="value">5/5 ⭐⭐⭐⭐⭐</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="insight-box" style="margin-top: 32px; background: rgba(0, 210, 106, 0.1); border-left-color: var(--accent-green);">
+                    <p style="font-size: 18px; font-weight: 700;">
+                        <span class="highlight">✅ PROCEED WITH CONFIDENCE</span><br>
+                        <span style="font-size: 16px; font-weight: 400; margin-top: 8px; display: block;">
+                            Next Step: Approve market opportunity and allocate resources for integrated platform development.
+                        </span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-button" id="prevBtn" onclick="changeSlide(-1)">←</button>
+            <div class="nav-dots" id="navDots"></div>
+            <button class="nav-button" id="nextBtn" onclick="changeSlide(1)">→</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const totalSlides = 7;
+
+        // Initialize navigation dots
+        const navDots = document.getElementById('navDots');
+        for (let i = 0; i < totalSlides; i++) {
+            const dot = document.createElement('div');
+            dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+            dot.onclick = () => goToSlide(i);
+            navDots.appendChild(dot);
+        }
+
+        function updateSlide() {
+            const slides = document.querySelectorAll('.slide');
+            slides.forEach((slide, index) => {
+                slide.classList.toggle('active', index === currentSlide);
+            });
+
+            // Update dots
+            document.querySelectorAll('.nav-dot').forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSlide);
+            });
+
+            // Update counter
+            document.getElementById('slideCounter').textContent = `${currentSlide + 1} / ${totalSlides}`;
+
+            // Update progress bar
+            const progress = ((currentSlide + 1) / totalSlides) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+
+            // Update navigation buttons
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            const newSlide = currentSlide + direction;
+            if (newSlide >= 0 && newSlide < totalSlides) {
+                currentSlide = newSlide;
+                updateSlide();
+            }
+        }
+
+        function goToSlide(index) {
+            currentSlide = index;
+            updateSlide();
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+            if (e.key === ' ') {
+                e.preventDefault();
+                changeSlide(1);
+            }
+        });
+
+        // Initialize
+        updateSlide();
+    </script>
+</body>
+</html>
