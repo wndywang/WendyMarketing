@@ -5,12 +5,12 @@ export const slides = [
     order: 1,
     content: {
       en: {
-        title: 'App Store Repositioning',
+        title: 'Lumen Repositioning Plan',
         subtitle: 'Strategic Shift to Wellness Platform',
         description: 'Presenting our new positioning and key features to the product team'
       },
       zh: {
-        title: '应用商店重新定位',
+        title: 'Lumen 重新定位计划',
         subtitle: '向健康平台的战略转变',
         description: '向产品团队展示我们的新定位和关键功能'
       }
