@@ -1,0 +1,25 @@
+.slide-counter {
+  background: rgba(255, 107, 53, 0.1);
+  border: 1px solid rgba(255, 107, 53, 0.3);
+  border-radius: 12px;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #FF6B35;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.slide-counter-current {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.slide-counter-separator {
+  opacity: 0.6;
+}
+
+.slide-counter-total {
+  opacity: 0.8;
+}

@@ -1,0 +1,79 @@
+.navigation {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  z-index: 100;
+  background: rgba(26, 26, 26, 0.9);
+  backdrop-filter: blur(10px);
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.nav-button {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #FF6B35;
+  border: none;
+  color: #1A1A1A;
+  font-size: 1.5rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  will-change: transform;
+}
+
+.nav-button:hover:not(.disabled) {
+  background: #FF8C5A;
+  transform: scale(1.1);
+}
+
+.nav-button:active:not(.disabled) {
+  transform: scale(0.95);
+}
+
+.nav-button.disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  background: rgba(255, 107, 53, 0.3);
+}
+
+.progress-indicator {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.progress-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0;
+}
+
+.progress-dot:hover {
+  background: rgba(255, 107, 53, 0.6);
+  transform: scale(1.2);
+}
+
+.progress-dot.active {
+  width: 32px;
+  border-radius: 6px;
+  background: #FF6B35;
+}
+
+.progress-dot.active:hover {
+  transform: scale(1.1);
+}

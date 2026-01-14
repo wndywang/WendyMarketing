@@ -1,0 +1,229 @@
+.slide {
+  width: 100%;
+  max-width: 1200px;
+  height: 100%;
+  max-height: 85vh;
+  background: #1A1A1A;
+  border-radius: 24px;
+  padding: 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transform: translateX(20px);
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+  will-change: transform, opacity;
+}
+
+.slide.active {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Cover Slide */
+.slide-type-cover {
+  background: linear-gradient(135deg, #FF6B35 0%, #1A1A1A 100%);
+  color: white;
+}
+
+.slide-cover {
+  text-align: center;
+  width: 100%;
+}
+
+.slide-cover-title {
+  font-size: 4rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, #FFFFFF 0%, #FF8C5A 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.slide-cover-subtitle {
+  font-size: 2.5rem;
+  font-weight: 600;
+  margin-bottom: 2rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.slide-cover-description {
+  font-size: 1.25rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 2rem;
+}
+
+/* Content Slides */
+.slide-content-wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.slide-title {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #FF6B35;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.slide-points {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.slide-point {
+  font-size: 1.5rem;
+  color: rgba(255, 255, 255, 0.9);
+  padding: 1.5rem;
+  background: rgba(255, 107, 53, 0.1);
+  border-radius: 16px;
+  border-left: 4px solid #FF6B35;
+  transition: all 0.2s ease;
+}
+
+.slide-point:hover {
+  background: rgba(255, 107, 53, 0.15);
+  transform: translateX(4px);
+}
+
+/* Feature Detail Slides */
+.slide-feature-icon {
+  font-size: 5rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.slide-feature-name {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #FF6B35;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.slide-feature-description {
+  font-size: 1.25rem;
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.slide-feature-points {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.slide-feature-point {
+  font-size: 1.125rem;
+  color: rgba(255, 255, 255, 0.85);
+  padding: 1rem;
+  background: rgba(255, 107, 53, 0.08);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.slide-feature-point:hover {
+  background: rgba(255, 107, 53, 0.12);
+}
+
+/* Next Steps Slide */
+.slide-next-steps {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  counter-reset: step-counter;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.slide-next-step {
+  counter-increment: step-counter;
+  font-size: 1.5rem;
+  color: rgba(255, 255, 255, 0.9);
+  padding: 1.5rem;
+  background: rgba(255, 107, 53, 0.1);
+  border-radius: 16px;
+  border-left: 4px solid #FF6B35;
+  position: relative;
+  padding-left: 4rem;
+  transition: all 0.2s ease;
+}
+
+.slide-next-step::before {
+  content: counter(step-counter);
+  position: absolute;
+  left: 1.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2.5rem;
+  height: 2.5rem;
+  background: #FF6B35;
+  color: #1A1A1A;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+
+.slide-next-step:hover {
+  background: rgba(255, 107, 53, 0.15);
+  transform: translateX(4px);
+}
+
+/* Responsive */
+@media (max-width: 1440px) {
+  .slide {
+    padding: 3rem;
+    max-height: 90vh;
+  }
+
+  .slide-cover-title {
+    font-size: 3rem;
+  }
+
+  .slide-cover-subtitle {
+    font-size: 2rem;
+  }
+
+  .slide-title {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 1280px) {
+  .slide {
+    padding: 2rem;
+  }
+
+  .slide-cover-title {
+    font-size: 2.5rem;
+  }
+
+  .slide-title {
+    font-size: 2rem;
+  }
+
+  .slide-point,
+  .slide-next-step {
+    font-size: 1.25rem;
+  }
+}

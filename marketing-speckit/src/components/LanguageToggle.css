@@ -1,0 +1,26 @@
+.language-toggle {
+  background: rgba(255, 107, 53, 0.2);
+  border: 2px solid #FF6B35;
+  border-radius: 12px;
+  padding: 0.75rem 1.5rem;
+  color: #FF6B35;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  will-change: transform;
+}
+
+.language-toggle:hover {
+  background: rgba(255, 107, 53, 0.3);
+  transform: scale(1.05);
+}
+
+.language-toggle:active {
+  transform: scale(0.95);
+}
+
+.language-toggle-text {
+  display: block;
+  transition: opacity 0.2s ease;
+}
