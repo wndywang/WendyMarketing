@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280, initial-scale=1">
+<title>ChronoAI — Week 10 Monday Update</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --purple:       #8B5CF6;
+  --green:        #10B981;
+  --green-light:  #34D399;
+  --blue:         #3B82F6;
+  --blue-light:   #93C5FD;
+  --amber:        #F59E0B;
+  --amber-light:  #FCD34D;
+  --white:        #FFFFFF;
+  --off:          rgba(255,255,255,0.88);
+  --muted:        rgba(255,255,255,0.62);
+  --dim:          rgba(255,255,255,0.32);
+  --dimmer:       rgba(255,255,255,0.12);
+  --border:       rgba(255,255,255,0.07);
+  --surface:      rgba(255,255,255,0.04);
+  --surface2:     rgba(255,255,255,0.07);
+  --bg:           #050507;
+}
+
+html, body {
+  width: 100%; height: 100%;
+  background: #000;
+  color: var(--white);
+  font-family: 'Inter', sans-serif;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+#outer {
+  width: 100vw; height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  background: #000;
+}
+
+#deck {
+  position: relative;
+  width: 1280px; height: 800px;
+  background: var(--bg);
+  overflow: hidden;
+  transform-origin: center center;
+}
+
+/* ── SLIDES ── */
+.slide {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  justify-content: center; align-items: flex-start;
+  padding: 72px 96px 80px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.6s cubic-bezier(.4,0,.2,1), transform 0.6s cubic-bezier(.4,0,.2,1);
+  transform: translateX(40px);
+}
+.slide.active { opacity: 1; pointer-events: all; transform: translateX(0); }
+.slide.prev   { opacity: 0; transform: translateX(-40px); }
+.slide.center { align-items: center; text-align: center; }
+
+/* ── ORBS ── */
+.orb {
+  position: absolute; border-radius: 50%;
+  pointer-events: none; filter: blur(120px);
+}
+@keyframes f1 { 0%,100%{transform:translate(0,0) scale(1)}   50%{transform:translate(22px,-18px) scale(1.04)} }
+@keyframes f2 { 0%,100%{transform:translate(0,0) scale(1)}   50%{transform:translate(-16px,20px) scale(1.05)} }
+@keyframes f3 { 0%,100%{transform:translate(0,0)}            50%{transform:translate(14px,14px)} }
+
+/* ── CHROME ── */
+#ui-top {
+  position: absolute; top: 0; left: 0; right: 0; z-index: 50;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 22px 32px; pointer-events: none;
+}
+.logo { font-size: 11px; font-weight: 700; letter-spacing: 0.2em; color: var(--dim); text-transform: uppercase; }
+.lang-toggle {
+  display: flex; background: var(--surface2);
+  border: 1px solid var(--border); border-radius: 24px; overflow: hidden;
+  pointer-events: all;
+}
+.lang-toggle button {
+  padding: 5px 14px; font-size: 11px; font-weight: 700;
+  letter-spacing: 0.06em; border: none; background: transparent;
+  color: var(--muted); cursor: pointer; transition: all 0.2s; font-family: inherit;
+}
+.lang-toggle button.active { background: var(--white); color: #000; border-radius: 22px; margin: 1px; }
+
+#ui-bot {
+  position: absolute; bottom: 0; left: 0; right: 0; z-index: 50;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 32px;
+}
+#counter { font-size: 11px; font-weight: 500; color: var(--dim); letter-spacing: 0.12em; }
+#dots    { display: flex; gap: 7px; align-items: center; }
+.dot {
+  width: 5px; height: 5px; border-radius: 3px;
+  background: var(--dimmer); cursor: pointer;
+  transition: all 0.35s cubic-bezier(.4,0,.2,1);
+}
+.dot.active { width: 22px; background: var(--white); }
+.nav-arrows { display: flex; gap: 6px; }
+.nav-btn {
+  width: 34px; height: 34px; border-radius: 50%;
+  border: 1px solid var(--border); background: var(--surface);
+  color: var(--off); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; transition: all 0.2s; font-family: inherit;
+}
+.nav-btn:hover { background: var(--surface2); border-color: var(--dim); }
+
+#progress {
+  position: absolute; top: 0; left: 0; height: 2px;
+  background: linear-gradient(90deg, var(--purple), var(--blue));
+  transition: width 0.55s cubic-bezier(.4,0,.2,1); z-index: 100;
+}
+
+/* ── ANIMATION ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.a { opacity: 0; }
+.slide.active .a { animation: fadeUp 0.5s ease both; }
+
+/* ── TYPE SCALE ── */
+.tag {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.22em;
+  color: var(--muted); text-transform: uppercase; margin-bottom: 20px;
+}
+.D  { font-size: 100px; font-weight: 900; line-height: 0.95; letter-spacing: -0.045em; }
+.D2 { font-size: 86px;  font-weight: 900; line-height: 0.95; letter-spacing: -0.04em; }
+.D3 { font-size: 72px;  font-weight: 900; line-height: 0.95; letter-spacing: -0.04em; }
+.D4 { font-size: 52px;  font-weight: 900; line-height: 0.95; letter-spacing: -0.035em; }
+.outline { -webkit-text-stroke: 1.5px rgba(255,255,255,0.2); color: transparent; }
+.why {
+  font-size: 16px; font-weight: 400; font-style: italic;
+  color: var(--muted); line-height: 1.6; margin-top: 18px; max-width: 600px;
+}
+
+/* ── UTILITIES ── */
+.c-green  { color: var(--green-light); }
+.c-blue   { color: var(--blue-light); }
+.c-amber  { color: var(--amber-light); }
+.c-purple { color: #C4B5FD; }
+.divider  { width: 32px; height: 2px; background: var(--border); margin: 22px 0; }
+.sep      { width: 100%; height: 1px; background: var(--border); }
+
+/* ── PILLS ── */
+.pill {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 8px 15px; border-radius: 100px;
+  font-size: 13px; font-weight: 600; border: 1px solid;
+}
+.pill-green { background: rgba(16,185,129,0.1);  border-color: rgba(16,185,129,0.28);  color: var(--green-light); }
+.pill-blue  { background: rgba(59,130,246,0.1);   border-color: rgba(59,130,246,0.28);  color: var(--blue-light); }
+.pill-amber { background: rgba(245,158,11,0.1);   border-color: rgba(245,158,11,0.28);  color: var(--amber-light); }
+.pill-muted { background: var(--surface); border-color: var(--border); color: var(--muted); font-size: 12px; }
+
+/* ── BADGE ── */
+.badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 11px; border-radius: 6px; font-size: 11px;
+  font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; border: 1px solid;
+}
+.badge-amber { background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.28); color: var(--amber-light); }
+.badge-green { background: rgba(16,185,129,0.1); border-color: rgba(16,185,129,0.28); color: var(--green-light); }
+
+/* ── STAT CARDS ── */
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.stat-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 18px 20px;
+}
+.stat-num   { font-size: 44px; font-weight: 900; letter-spacing: -0.04em; line-height: 1; }
+.stat-label { font-size: 11px; color: var(--muted); margin-top: 5px; letter-spacing: 0.04em; line-height: 1.4; }
+
+/* ── ACTION ROW ── */
+.action-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 20px; }
+
+/* ── CHECKLIST ── */
+.checklist { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+.checklist li { display: flex; align-items: flex-start; gap: 10px; font-size: 13.5px; color: var(--off); line-height: 1.45; }
+.check-box { width: 17px; height: 17px; border-radius: 4px; border: 1.5px solid var(--border); flex-shrink: 0; margin-top: 2px; }
+
+/* ── LAUNCH CHECKLIST ── */
+.launch-list { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+.launch-list li { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--off); }
+.launch-num { font-size: 11px; font-weight: 700; width: 20px; height: 20px; border-radius: 50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.3); color: var(--amber-light); }
+
+/* ── METRIC ROWS ── */
+.m-row { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.m-row:last-child { border-bottom: none; }
+.m-num  { font-size: 24px; font-weight: 900; letter-spacing: -0.02em; min-width: 60px; }
+.m-desc { font-size: 12px; color: var(--muted); line-height: 1.45; }
+
+/* ── QUOTE ── */
+.quote-block {
+  border-left: 2px solid var(--purple); padding-left: 18px;
+  font-size: 15px; font-style: italic; color: var(--muted); line-height: 1.75;
+}
+.quote-attr { font-style: normal; font-size: 10px; letter-spacing: 0.12em; margin-top: 8px; color: var(--dimmer); }
+
+
+/* ══ SLIDE-SPECIFIC ══ */
+
+/* S1 */
+#s1 .pill-row  { display: flex; gap: 10px; margin-top: 28px; flex-wrap: wrap; justify-content: center; }
+#s1 .context   { margin-top: 18px; font-size: 12px; color: var(--dim); letter-spacing: 0.06em; }
+
+/* S2 */
+#s2 .layout { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; width: 100%; margin-top: 28px; align-items: start; }
+
+/* S3 — RiteSet */
+#s3 .layout { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; width: 100%; margin-top: 28px; align-items: start; }
+.countdown-box {
+  margin-top: 22px; display: inline-flex; align-items: center; gap: 12px;
+  padding: 14px 20px; border-radius: 12px;
+  background: rgba(245,158,11,0.07); border: 1px solid rgba(245,158,11,0.22);
+}
+.countdown-num { font-size: 40px; font-weight: 900; letter-spacing: -0.04em; color: var(--amber-light); line-height: 1; }
+.countdown-label { font-size: 11px; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; line-height: 1.5; }
+
+/* S4 — SaaS */
+#s4 { align-items: center; text-align: center; }
+#s4 .q-grid  { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; width: 100%; margin-top: 32px; }
+.q-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px 18px; }
+.q-num  { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; color: var(--muted); text-transform: uppercase; margin-bottom: 10px; }
+.q-text { font-size: 18px; font-weight: 700; line-height: 1.3; }
+#s4 .pill-row { display: flex; gap: 10px; justify-content: center; margin-top: 22px; }
+#s4 .note     { font-size: 11px; color: var(--dim); margin-top: 14px; letter-spacing: 0.05em; }
+
+/* S5 — Expansion 3-col */
+#s5 { padding: 0; }
+#s5 .tri { display: grid; grid-template-columns: 1fr 1fr 1fr; height: 100%; }
+#s5 .panel { padding: 52px 48px; display: flex; flex-direction: column; justify-content: center; overflow: hidden; position: relative; }
+#s5 .panel.b1 { border-right: 1px solid var(--border); }
+#s5 .panel.b2 { border-right: 1px solid var(--border); }
+
+/* S6 — Friday */
+#s6 .check-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 36px; width: 100%; }
+#s6 .check-head { font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 13px; }
+</style>
+</head>
+<body>
+
+<div id="outer"><div id="deck">
+
+  <div id="progress" style="width:16.6%"></div>
+
+  <div id="ui-top">
+    <div class="logo">ChronoAI</div>
+    <div class="lang-toggle">
+      <button id="btn-en" class="active" onclick="setLang('en')">EN</button>
+      <button id="btn-zh" onclick="setLang('zh')">中文</button>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════
+       S1 — TITLE
+       ═══════════════════════════════ -->
+  <div class="slide center" id="s1">
+    <div class="orb" style="width:580px;height:580px;background:radial-gradient(circle,#7C3AED,transparent 70%);top:-180px;left:-80px;opacity:0.18;animation:f1 11s ease-in-out infinite;"></div>
+    <div class="orb" style="width:360px;height:360px;background:radial-gradient(circle,#10B981,transparent 70%);bottom:-100px;right:80px;opacity:0.11;animation:f2 13s ease-in-out infinite;"></div>
+    <div class="orb" style="width:220px;height:220px;background:radial-gradient(circle,#F59E0B,transparent 70%);top:60px;right:180px;opacity:0.10;animation:f3 9s ease-in-out infinite;"></div>
+
+    <div class="a tag">
+      <span data-en="ChronoAI · Brand Director · Week 10 · Monday Update" data-zh="ChronoAI · 品牌总监 · 第10周 · 周一更新">ChronoAI · Brand Director · Week 10 · Monday Update</span>
+    </div>
+
+    <div class="a D" data-en="This Week," data-zh="本周，">This Week,</div>
+    <div class="a D outline" data-en="ChronoAI" data-zh="ChronoAI">ChronoAI</div>
+    <div class="a D" data-en="Earns Its Name." data-zh="赢得自己的名声。">Earns Its Name.</div>
+
+    <div class="divider a" style="margin:22px auto"></div>
+
+    <div class="a" style="font-size:15px;color:var(--muted);font-style:italic">
+      <span data-en="Two apps shipping. First B2B pipeline open. Singapore sees who we are." data-zh="两款应用即将上线。B2B管道正式开启。新加坡看见我们是谁。">Two apps shipping. First B2B pipeline open. Singapore sees who we are.</span>
+    </div>
+
+    <div class="a pill-row">
+      <div class="pill pill-green"><span>🌱</span><span data-en="SoulGarden — Market + v2.0" data-zh="SoulGarden — 营销 + v2.0">SoulGarden — Market + v2.0</span></div>
+      <div class="pill pill-amber"><span>📱</span><span data-en="RiteSet — Launch Thursday" data-zh="RiteSet — 周四发布">RiteSet — Launch Thursday</span></div>
+      <div class="pill pill-blue"><span>⚡</span><span data-en="Marketing SaaS — PRCA Teaser" data-zh="营销SaaS — PRCA预告">Marketing SaaS — PRCA Teaser</span></div>
+    </div>
+
+    <div class="a context">
+      <span data-en="Brand Director weekly focus — Monday set, Friday checked" data-zh="品牌总监周度重点 — 周一设定，周五复盘">Brand Director weekly focus — Monday set, Friday checked</span>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════
+       S2 — SOULGARDEN
+       ═══════════════════════════════ -->
+  <div class="slide" id="s2">
+    <div class="orb" style="width:660px;height:660px;background:radial-gradient(circle,#059669,transparent 70%);top:-220px;right:-180px;opacity:0.13;animation:f1 9s ease-in-out infinite;"></div>
+
+    <div class="a tag">
+      <span data-en="PRIORITY 01 · FIRST LIVE PRODUCT · GROW + UPGRADE" data-zh="重点 01 · 首款上线产品 · 增长 + 升级">PRIORITY 01 · FIRST LIVE PRODUCT · GROW + UPGRADE</span>
+    </div>
+
+    <div class="layout">
+      <!-- LEFT -->
+      <div>
+        <div class="a D3" data-en="SoulGarden" data-zh="SoulGarden">SoulGarden</div>
+        <div class="a D3 c-green" data-en="Is Live." data-zh="已上线。">Is Live.</div>
+
+        <div class="a" style="margin-top:14px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <div class="badge badge-green"><span data-en="🚀 In Market" data-zh="🚀 已上市">🚀 In Market</span></div>
+          <div class="badge badge-green"><span data-en="🔧 v2.0 Backend Fix In Progress" data-zh="🔧 v2.0 后端修复进行中">🔧 v2.0 Backend Fix In Progress</span></div>
+        </div>
+
+        <div class="a why" data-en="Every retained user proves ChronoAI can build AND market from zero. v2.0 fixes the foundation while marketing runs." data-zh="每位留存用户都证明 ChronoAI 能从零构建并推广产品。v2.0 修复底层架构，营销同步推进。">Every retained user proves ChronoAI can build AND market from zero. v2.0 fixes the foundation while marketing runs.</div>
+
+        <div class="a action-row" style="margin-top:22px">
+          <div class="pill pill-muted"><span data-en="ASO" data-zh="应用商店优化">ASO</span></div>
+          <div class="pill pill-muted"><span data-en="3–5 Posts" data-zh="3-5条内容">3–5 Posts</span></div>
+          <div class="pill pill-muted"><span data-en="Reddit Community" data-zh="Reddit社群">Reddit Community</span></div>
+          <div class="pill pill-muted"><span data-en="Share Moments" data-zh="分享节点">Share Moments</span></div>
+        </div>
+
+        <div class="a" style="margin-top:14px;font-size:12px;color:var(--dim)">
+          <span data-en="Hook (3 sec) → Problem → Solution → CTA (2 sec) on every piece of content." data-zh="每条内容：钩子（3秒）→ 痛点 → 解决方案 → 行动号召（2秒）。">Hook (3 sec) → Problem → Solution → CTA (2 sec) on every piece of content.</span>
+        </div>
+      </div>
+
+      <!-- RIGHT: Gate 1 -->
+      <div>
+        <div class="a tag" style="margin-bottom:14px">
+          <span data-en="GATE 1 · USAGE VALIDATION · 0–2 MONTHS" data-zh="第一关 · 使用验证 · 0-2个月">GATE 1 · USAGE VALIDATION · 0–2 MONTHS</span>
+        </div>
+
+        <div class="stat-grid">
+          <div class="a stat-card" style="border-color:rgba(16,185,129,0.28)">
+            <div class="stat-num c-green">200+</div>
+            <div class="stat-label" data-en="Active users (core task)" data-zh="活跃用户（核心任务）">Active users (core task)</div>
+          </div>
+          <div class="a stat-card" style="border-color:rgba(16,185,129,0.28)">
+            <div class="stat-num c-green">≥40%</div>
+            <div class="stat-label" data-en="D7 Retention (cohort)" data-zh="第7天留存率（批次）">D7 Retention (cohort)</div>
+          </div>
+          <div class="a stat-card" style="border-color:rgba(16,185,129,0.28)">
+            <div class="stat-num c-green">500+</div>
+            <div class="stat-label" data-en="Social followers (all channels)" data-zh="全平台社交粉丝">Social followers (all channels)</div>
+          </div>
+          <div class="a stat-card" style="border-color:rgba(16,185,129,0.28)">
+            <div class="stat-num c-green">20+</div>
+            <div class="stat-label" data-en="Spontaneous user feedback" data-zh="用户自发反馈数量">Spontaneous user feedback</div>
+          </div>
+        </div>
+
+        <div class="a" style="margin-top:12px;padding:12px 15px;background:rgba(16,185,129,0.05);border:1px solid rgba(16,185,129,0.18);border-radius:10px;font-size:12px;color:var(--muted);line-height:1.6">
+          <span style="color:var(--green-light);font-weight:700" data-en="Pass → Gate 2." data-zh="通过 → 进入第二关。">Pass → Gate 2.</span>
+          <span data-en=" Fail → pivot or kill. ChronoAI does not scale what the market rejects." data-zh=" 未通过 → 转型或终止。ChronoAI 不为市场拒绝的东西扩大投入。"> Fail → pivot or kill. ChronoAI does not scale what the market rejects.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════
+       S3 — RITESET
+       ═══════════════════════════════ -->
+  <div class="slide" id="s3">
+    <div class="orb" style="width:600px;height:600px;background:radial-gradient(circle,#B45309,transparent 70%);top:-200px;right:-160px;opacity:0.15;animation:f1 10s ease-in-out infinite;"></div>
+    <div class="orb" style="width:300px;height:300px;background:radial-gradient(circle,#F59E0B,transparent 70%);bottom:-80px;left:80px;opacity:0.09;animation:f2 14s ease-in-out infinite;"></div>
+
+    <div class="a tag">
+      <span data-en="PRIORITY 02 · RITESET · APP STORE APPROVED · SHIPPING THURSDAY 5 MARCH" data-zh="重点 02 · RITESET · 应用商店已通过审核 · 周四3月5日发布">PRIORITY 02 · RITESET · APP STORE APPROVED · SHIPPING THURSDAY 5 MARCH</span>
+    </div>
+
+    <div class="layout">
+      <!-- LEFT -->
+      <div>
+        <div class="a D3" data-en="RiteSet" data-zh="RiteSet">RiteSet</div>
+        <div class="a D3 c-amber" data-en="Ships Thursday." data-zh="周四上线。">Ships Thursday.</div>
+
+        <div class="a" style="margin-top:14px">
+          <div class="badge badge-amber"><span data-en="✅ App Store Approved" data-zh="✅ 应用商店已通过审核">✅ App Store Approved</span></div>
+        </div>
+
+        <div class="a why" data-en="Two apps live in one week. This is ChronoAI's execution speed. We don't just build — we ship." data-zh="一周之内两款应用上线。这就是 ChronoAI 的执行速度。我们不只是构建——我们交付。">Two apps live in one week. This is ChronoAI's execution speed. We don't just build — we ship.</div>
+
+        <div class="a countdown-box">
+          <div>
+            <div class="countdown-num">T–2</div>
+          </div>
+          <div class="countdown-label">
+            <div data-en="Days to" data-zh="距离">Days to</div>
+            <div style="color:var(--amber-light);font-weight:700" data-en="LAUNCH" data-zh="发布">LAUNCH</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Launch checklist -->
+      <div>
+        <div class="a tag" style="margin-bottom:16px">
+          <span data-en="LAUNCH CHECKLIST · THURSDAY 5 MARCH" data-zh="发布清单 · 3月5日（周四）">LAUNCH CHECKLIST · THURSDAY 5 MARCH</span>
+        </div>
+
+        <ul class="a launch-list">
+          <li>
+            <div class="launch-num">1</div>
+            <span data-en="Final QA pass — core flows, edge cases, device testing" data-zh="最终QA验收 — 核心流程、边界情况、设备测试">Final QA pass — core flows, edge cases, device testing</span>
+          </li>
+          <li>
+            <div class="launch-num">2</div>
+            <span data-en="App Store listing live — description, screenshots, keywords locked" data-zh="应用商店页面上线 — 描述、截图、关键词全部确认">App Store listing live — description, screenshots, keywords locked</span>
+          </li>
+          <li>
+            <div class="launch-num">3</div>
+            <span data-en="Launch announcement ready — social post + 1 piece of content" data-zh="发布公告准备就绪 — 社交媒体帖子 + 1条内容">Launch announcement ready — social post + 1 piece of content</span>
+          </li>
+          <li>
+            <div class="launch-num">4</div>
+            <span data-en="Analytics tracking verified before go-live" data-zh="发布前确认数据追踪已正确配置">Analytics tracking verified before go-live</span>
+          </li>
+        </ul>
+
+        <div class="a" style="margin-top:20px;padding:12px 15px;background:rgba(245,158,11,0.05);border:1px solid rgba(245,158,11,0.2);border-radius:10px;font-size:12px;color:var(--muted);line-height:1.6">
+          <span style="color:var(--amber-light);font-weight:700" data-en="Gate 1 starts the moment it's live." data-zh="上线即启动第一关验证计时。">Gate 1 starts the moment it's live.</span>
+          <span data-en=" Track from day one: installs, D1 retention, usage frequency." data-zh=" 从第一天开始追踪：安装量、第1天留存率、使用频率。"> Track from day one: installs, D1 retention, usage frequency.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════
+       S4 — SAAS TEASER
+       ═══════════════════════════════ -->
+  <div class="slide center" id="s4">
+    <div class="orb" style="width:800px;height:800px;background:radial-gradient(circle,#1D4ED8,transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);opacity:0.10;animation:f3 12s ease-in-out infinite;"></div>
+    <div class="orb" style="width:300px;height:300px;background:radial-gradient(circle,#7C3AED,transparent 70%);top:30px;right:80px;opacity:0.09;animation:f1 9s ease-in-out infinite;"></div>
+
+    <div class="a tag">
+      <span data-en="PRIORITY 03 · CHRONOAI B2B ENTRY · PRCA CONFERENCE · MARCH 2026" data-zh="重点 03 · CHRONOAI B2B 布局 · PRCA大会 · 2026年3月">PRIORITY 03 · CHRONOAI B2B ENTRY · PRCA CONFERENCE · MARCH 2026</span>
+    </div>
+
+    <div class="a D2" data-en="We Build" data-zh="我们构建">We Build</div>
+    <div class="a D2 c-blue" data-en="What Automates You." data-zh="让你全面自动化的一切。">What Automates You.</div>
+
+    <div class="a why" style="text-align:center;margin:16px auto 0">
+      <span data-en="PRCA is ChronoAI's first B2B market signal. One teaser opens the entire pipeline." data-zh="PRCA 是 ChronoAI 的首个B2B市场信号。一次预告，开启整条商业管道。">PRCA is ChronoAI's first B2B market signal. One teaser opens the entire pipeline.</span>
+    </div>
+
+    <div class="a q-grid">
+      <div class="q-card" style="border-color:rgba(59,130,246,0.2)">
+        <div class="q-num" data-en="AT PRCA · ASK 01" data-zh="PRCA现场 · 问题01">AT PRCA · ASK 01</div>
+        <div class="q-text" data-en='"Would you use this?"' data-zh='"您会使用这个产品吗？"'>"Would you use this?"</div>
+      </div>
+      <div class="q-card" style="border-color:rgba(59,130,246,0.2)">
+        <div class="q-num" data-en="AT PRCA · ASK 02" data-zh="PRCA现场 · 问题02">AT PRCA · ASK 02</div>
+        <div class="q-text" data-en='"What is missing?"' data-zh='"还缺少什么功能？"'>"What is missing?"</div>
+      </div>
+      <div class="q-card" style="border-color:rgba(59,130,246,0.2)">
+        <div class="q-num" data-en="AT PRCA · ASK 03" data-zh="PRCA现场 · 问题03">AT PRCA · ASK 03</div>
+        <div class="q-text" data-en='"Who else should we talk to?"' data-zh='"还有谁是我们应该接触的？"'>"Who else should we talk to?"</div>
+      </div>
+    </div>
+
+    <div class="a pill-row">
+      <div class="pill pill-blue"><span>🎯</span><span data-en="Leads" data-zh="潜在客户">Leads</span></div>
+      <div class="pill pill-blue"><span>🏢</span><span data-en="Brands" data-zh="品牌合作">Brands</span></div>
+      <div class="pill pill-blue"><span>🤝</span><span data-en="Potential Clients" data-zh="意向客户">Potential Clients</span></div>
+    </div>
+
+    <div class="a note">
+      <span data-en="Friday: Teaser delivered · Contact list captured · 3–5 feedback notes · Next step per lead" data-zh="周五：预告完成 · 联系人名单 · 3-5条反馈记录 · 每个线索有明确下一步">Friday: Teaser delivered · Contact list captured · 3–5 feedback notes · Next step per lead</span>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════
+       S5 — EXPANSION (3 STREAMS)
+       ═══════════════════════════════ -->
+  <div class="slide" id="s5">
+    <div class="tri">
+
+      <!-- SoulGarden -->
+      <div class="panel b1">
+        <div class="orb" style="width:420px;height:420px;background:radial-gradient(circle,#059669,transparent 70%);top:-140px;left:-120px;opacity:0.13;animation:f1 10s ease-in-out infinite;"></div>
+
+        <div class="a tag c-green" data-en="STREAM 01 · CONSUMER" data-zh="管道 01 · 消费者">STREAM 01 · CONSUMER</div>
+        <div class="a D4 c-green" data-en="SoulGarden" data-zh="SoulGarden">SoulGarden</div>
+        <div class="a D4 outline" data-en="Grow + Fix." data-zh="增长 + 修复。">Grow + Fix.</div>
+
+        <div class="a why" style="font-size:13px;margin-top:12px" data-en="Market now. Fix backend in parallel. Don't slow growth for tech." data-zh="当前推广营销，同步修复后端。不因技术而放慢增长。">Market now. Fix backend in parallel. Don't slow growth for tech.</div>
+
+        <div style="margin-top:20px">
+          <div class="a m-row"><div class="m-num c-green">200+</div><div class="m-desc" data-en="active users (core task)" data-zh="活跃用户（核心任务）">active users (core task)</div></div>
+          <div class="a m-row"><div class="m-num c-green">≥40%</div><div class="m-desc" data-en="D7 retention" data-zh="第7天留存率">D7 retention</div></div>
+          <div class="a m-row"><div class="m-num c-green">500+</div><div class="m-desc" data-en="social followers" data-zh="社交媒体粉丝">social followers</div></div>
+          <div class="a m-row" style="border-bottom:none"><div class="m-num c-green">20+</div><div class="m-desc" data-en="user feedback pieces" data-zh="用户反馈条数">user feedback pieces</div></div>
+        </div>
+      </div>
+
+      <!-- RiteSet -->
+      <div class="panel b2" style="background:rgba(245,158,11,0.02)">
+        <div class="orb" style="width:380px;height:380px;background:radial-gradient(circle,#B45309,transparent 70%);bottom:-120px;left:50%;transform:translateX(-50%);opacity:0.11;animation:f3 11s ease-in-out infinite;"></div>
+
+        <div class="a tag c-amber" data-en="STREAM 02 · CONSUMER" data-zh="管道 02 · 消费者">STREAM 02 · CONSUMER</div>
+        <div class="a D4 c-amber" data-en="RiteSet" data-zh="RiteSet">RiteSet</div>
+        <div class="a D4 outline" data-en="Launching." data-zh="即将发布。">Launching.</div>
+
+        <div class="a why" style="font-size:13px;margin-top:12px" data-en="Second app. Same week. ChronoAI's execution velocity is the brand." data-zh="第二款应用。同一周。ChronoAI 的执行速度就是品牌。">Second app. Same week. ChronoAI's execution velocity is the brand.</div>
+
+        <div style="margin-top:20px">
+          <div class="a m-row"><div class="m-num c-amber">Thu</div><div class="m-desc" data-en="5 March — publish day" data-zh="3月5日 — 发布日">5 March — publish day</div></div>
+          <div class="a m-row"><div class="m-num c-amber">D1</div><div class="m-desc" data-en="track installs + retention from launch" data-zh="从发布起追踪安装量和留存率">track installs + retention from launch</div></div>
+          <div class="a m-row"><div class="m-num c-amber">G1</div><div class="m-desc" data-en="Gate 1 clock starts at go-live" data-zh="上线即启动第一关计时">Gate 1 clock starts at go-live</div></div>
+          <div class="a m-row" style="border-bottom:none"><div class="m-num c-amber">1</div><div class="m-desc" data-en="launch post — social + announcement" data-zh="发布帖子 — 社交媒体 + 公告">launch post — social + announcement</div></div>
+        </div>
+      </div>
+
+      <!-- SaaS -->
+      <div class="panel" style="background:rgba(59,130,246,0.02)">
+        <div class="orb" style="width:420px;height:420px;background:radial-gradient(circle,#1D4ED8,transparent 70%);bottom:-140px;right:-120px;opacity:0.13;animation:f2 12s ease-in-out infinite;"></div>
+
+        <div class="a tag c-blue" data-en="STREAM 03 · B2B" data-zh="管道 03 · B2B">STREAM 03 · B2B</div>
+        <div class="a D4 c-blue" data-en="Marketing SaaS" data-zh="营销SaaS">Marketing SaaS</div>
+        <div class="a D4 outline" data-en="Pipeline Opens." data-zh="管道开启。">Pipeline Opens.</div>
+
+        <div class="a why" style="font-size:13px;margin-top:12px" data-en="PRCA teaser positions ChronoAI as Singapore's B2B AI automation brand." data-zh="PRCA预告将 ChronoAI 定位为新加坡B2B AI自动化品牌。">PRCA teaser positions ChronoAI as Singapore's B2B AI automation brand.</div>
+
+        <div style="margin-top:20px">
+          <div class="a m-row"><div class="m-num c-blue">1</div><div class="m-desc" data-en="teaser asset delivered at PRCA" data-zh="PRCA现场完成产品预告">teaser asset delivered at PRCA</div></div>
+          <div class="a m-row"><div class="m-num c-blue">3–5</div><div class="m-desc" data-en="quality conversations" data-zh="高质量商务对话">quality conversations</div></div>
+          <div class="a m-row"><div class="m-num c-blue">3–5</div><div class="m-desc" data-en="feedback notes logged" data-zh="条反馈记录">feedback notes logged</div></div>
+          <div class="a m-row" style="border-bottom:none"><div class="m-num c-blue">1</div><div class="m-desc" data-en="next step per hot lead" data-zh="每个优质客户的明确下一步">next step per hot lead</div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════
+       S6 — FRIDAY CHECK-IN
+       ═══════════════════════════════ -->
+  <div class="slide" id="s6">
+    <div class="orb" style="width:520px;height:520px;background:radial-gradient(circle,#7C3AED,transparent 70%);bottom:-200px;right:-60px;opacity:0.12;animation:f1 14s ease-in-out infinite;"></div>
+    <div class="orb" style="width:240px;height:240px;background:radial-gradient(circle,#F59E0B,transparent 70%);top:-60px;left:320px;opacity:0.07;animation:f2 10s ease-in-out infinite;"></div>
+
+    <div class="a tag">
+      <span data-en="FRIDAY 6 MARCH · 15 MINUTES · DID WE MOVE CHRONOAI FORWARD?" data-zh="3月6日（周五）· 15分钟 · 我们让 CHRONOAI 前进了吗？">FRIDAY 6 MARCH · 15 MINUTES · DID WE MOVE CHRONOAI FORWARD?</span>
+    </div>
+
+    <div class="a D3" data-en="Kill Illusions." data-zh="消灭幻觉。">Kill Illusions.</div>
+    <div class="a D3 outline" data-en="Keep What's Real." data-zh="坚守现实。">Keep What's Real.</div>
+
+    <div class="divider a"></div>
+
+    <div class="a check-grid">
+
+      <!-- SoulGarden -->
+      <div>
+        <div class="check-head c-green" data-en="SOULGARDEN · GATE 1" data-zh="SOULGARDEN · 第一关">SOULGARDEN · GATE 1</div>
+        <ul class="checklist">
+          <li><div class="check-box" style="border-color:rgba(16,185,129,0.38)"></div><span data-en="ASO, content &amp; community done?" data-zh="ASO、内容与社群任务均完成？">ASO, content &amp; community done?</span></li>
+          <li><div class="check-box" style="border-color:rgba(16,185,129,0.38)"></div><span data-en="200+ active users tracked?" data-zh="活跃用户数据追踪（200+）？">200+ active users tracked?</span></li>
+          <li><div class="check-box" style="border-color:rgba(16,185,129,0.38)"></div><span data-en="D7 retention ≥40% signal?" data-zh="第7天留存率信号 ≥40%？">D7 retention ≥40% signal?</span></li>
+          <li><div class="check-box" style="border-color:rgba(16,185,129,0.38)"></div><span data-en="v2.0 backend fix scoped?" data-zh="v2.0 后端修复范围已明确？">v2.0 backend fix scoped?</span></li>
+        </ul>
+      </div>
+
+      <!-- RiteSet -->
+      <div>
+        <div class="check-head c-amber" data-en="RITESET · LAUNCH" data-zh="RITESET · 发布">RITESET · LAUNCH</div>
+        <ul class="checklist">
+          <li><div class="check-box" style="border-color:rgba(245,158,11,0.38)"></div><span data-en="Published on App Store Thursday?" data-zh="周四已在应用商店发布？">Published on App Store Thursday?</span></li>
+          <li><div class="check-box" style="border-color:rgba(245,158,11,0.38)"></div><span data-en="Launch announcement posted?" data-zh="发布公告已发出？">Launch announcement posted?</span></li>
+          <li><div class="check-box" style="border-color:rgba(245,158,11,0.38)"></div><span data-en="D1 installs + retention tracked?" data-zh="第1天安装量和留存率已追踪？">D1 installs + retention tracked?</span></li>
+          <li><div class="check-box" style="border-color:rgba(245,158,11,0.38)"></div><span data-en="Gate 1 clock confirmed running?" data-zh="第一关计时已确认启动？">Gate 1 clock confirmed running?</span></li>
+        </ul>
+      </div>
+
+      <!-- SaaS -->
+      <div>
+        <div class="check-head c-blue" data-en="MARKETING SAAS · PRCA" data-zh="营销SAAS · PRCA">MARKETING SAAS · PRCA</div>
+        <ul class="checklist">
+          <li><div class="check-box" style="border-color:rgba(59,130,246,0.38)"></div><span data-en="Teaser presented at PRCA?" data-zh="已在PRCA大会完成预告？">Teaser presented at PRCA?</span></li>
+          <li><div class="check-box" style="border-color:rgba(59,130,246,0.38)"></div><span data-en="3–5 quality contacts captured?" data-zh="已收集3-5个优质联系人？">3–5 quality contacts captured?</span></li>
+          <li><div class="check-box" style="border-color:rgba(59,130,246,0.38)"></div><span data-en="Feedback notes logged?" data-zh="反馈记录已整理？">Feedback notes logged?</span></li>
+          <li><div class="check-box" style="border-color:rgba(59,130,246,0.38)"></div><span data-en="Next step per hot lead defined?" data-zh="每个优质客户已确定下一步？">Next step per hot lead defined?</span></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="a quote-block" style="margin-top:24px">
+      <span data-en='"The stronger the reality, the faster you move. The weaker the reality, the faster you kill."' data-zh='"现实信号越强，行动越快。现实信号越弱，终止越快。"'>"The stronger the reality, the faster you move. The weaker the reality, the faster you kill."</span>
+      <div class="quote-attr" data-en="PRC v1.2 — Product Reality Check · ChronoAI" data-zh="产品现实检验 v1.2 — PRC · ChronoAI">PRC v1.2 — Product Reality Check · ChronoAI</div>
+    </div>
+  </div>
+
+
+  <!-- BOTTOM UI -->
+  <div id="ui-bot">
+    <div id="counter">01 / 06</div>
+    <div id="dots"></div>
+    <div class="nav-arrows">
+      <button class="nav-btn" onclick="prevSlide()">←</button>
+      <button class="nav-btn" onclick="nextSlide()">→</button>
+    </div>
+  </div>
+
+</div></div>
+
+<script>
+let cur = 0, lang = 'en';
+const slides = Array.from(document.querySelectorAll('.slide'));
+const N = slides.length;
+
+const dotsEl = document.getElementById('dots');
+slides.forEach((_,i) => {
+  const d = document.createElement('div');
+  d.className = 'dot' + (i===0?' active':'');
+  d.onclick = () => goTo(i);
+  dotsEl.appendChild(d);
+});
+
+function goTo(n) {
+  if (n === cur) return;
+  slides[cur].classList.remove('active');
+  slides[cur].classList.add('prev');
+  const old = cur;
+  setTimeout(() => slides[old].classList.remove('prev'), 650);
+  cur = ((n%N)+N)%N;
+  slides[cur].classList.add('active');
+  triggerAnims(slides[cur]);
+  updateUI();
+}
+function nextSlide() { goTo(cur+1); }
+function prevSlide() { goTo(cur-1); }
+
+function triggerAnims(slide) {
+  const items = slide.querySelectorAll('.a');
+  items.forEach((el,i) => {
+    el.style.animation = 'none';
+    el.offsetHeight;
+    el.style.animation = `fadeUp 0.52s ease ${(0.04+i*0.07).toFixed(2)}s both`;
+  });
+}
+
+function updateUI() {
+  document.getElementById('counter').textContent =
+    String(cur+1).padStart(2,'0') + ' / ' + String(N).padStart(2,'0');
+  document.querySelectorAll('.dot').forEach((d,i) => d.classList.toggle('active', i===cur));
+  document.getElementById('progress').style.width = ((cur+1)/N*100)+'%';
+}
+
+function setLang(l) {
+  lang = l;
+  document.getElementById('btn-en').classList.toggle('active', l==='en');
+  document.getElementById('btn-zh').classList.toggle('active', l==='zh');
+  document.querySelectorAll('[data-en]').forEach(el => {
+    el.textContent = el.getAttribute('data-'+l) || el.getAttribute('data-en');
+  });
+  document.body.style.fontFamily = l==='zh'
+    ? "'Noto Sans SC','Inter',sans-serif"
+    : "'Inter',sans-serif";
+  document.documentElement.lang = l==='zh' ? 'zh-Hans' : 'en';
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key==='ArrowRight'||e.key===' '||e.key==='PageDown') { e.preventDefault(); nextSlide(); }
+  if (e.key==='ArrowLeft' ||e.key==='PageUp')                { e.preventDefault(); prevSlide(); }
+});
+
+function scaleDeck() {
+  const s = Math.min(window.innerWidth/1280, window.innerHeight/800, 1.2);
+  document.getElementById('deck').style.transform = `scale(${s})`;
+}
+window.addEventListener('resize', scaleDeck);
+scaleDeck();
+
+slides[0].classList.add('active');
+triggerAnims(slides[0]);
+updateUI();
+</script>
+</body>
+</html>
