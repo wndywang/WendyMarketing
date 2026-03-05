@@ -458,60 +458,83 @@ html, body { width:100%;height:100%;background:#000;color:var(--white);font-fami
 
 
   <!-- ════════════════════════════
-       S5 — PIVOT + HACKATHON
+       S5 — HACKATHON
        ════════════════════════════ -->
-  <div class="slide" id="s5">
-    <div class="orb" style="width:500px;height:500px;background:radial-gradient(circle,#F97316,transparent 70%);top:-180px;right:-120px;opacity:0.11;animation:f1 11s ease-in-out infinite;"></div>
-    <div class="orb" style="width:280px;height:280px;background:radial-gradient(circle,#10B981,transparent 70%);bottom:-80px;left:60px;opacity:0.08;animation:f2 13s ease-in-out infinite;"></div>
+  <div class="slide no-pad" id="s5">
+    <div style="display:grid;grid-template-columns:1fr 1fr;height:100%">
 
-    <div class="a tag c-orange">
-          <span data-en="PIVOT + SINGAPORE AI HUB · WEEK 10 UPDATE" data-zh="战略调整 + 新加坡AI枢纽 · 第10周更新">PIVOT + SINGAPORE AI HUB · WEEK 10 UPDATE</span>
+      <!-- LEFT: Big visual statement -->
+      <div style="padding:64px 56px;display:flex;flex-direction:column;justify-content:center;position:relative;border-right:1px solid var(--border)">
+        <div class="orb" style="width:500px;height:500px;background:radial-gradient(circle,#F97316,transparent 70%);top:-180px;left:-100px;opacity:0.13;animation:f1 11s ease-in-out infinite;"></div>
+
+        <div class="a tag c-orange" style="margin-bottom:20px">
+          <span data-en="STRATEGY UPDATE · WEEK 10" data-zh="战略更新 · 第10周">STRATEGY UPDATE · WEEK 10</span>
         </div>
 
-        <div class="a D4 c-orange" data-en="Small Event →" data-zh="小型活动 →">Small Event →</div>
-        <div class="a D4" style="margin-bottom:16px" data-en="Hackathon." data-zh="黑客松。">Hackathon.</div>
+        <div class="a" style="font-size:13px;font-weight:700;letter-spacing:0.14em;color:var(--orange);text-transform:uppercase;margin-bottom:8px" data-en="We are building a" data-zh="我们正在打造">We are building a</div>
+        <div class="a D3" style="line-height:1.05;margin-bottom:6px" data-en="ChronoAI" data-zh="ChronoAI">ChronoAI</div>
+        <div class="a D3 c-orange" style="line-height:1.05;margin-bottom:20px" data-en="Hackathon." data-zh="黑客松。">Hackathon.</div>
 
-        <div class="a" style="font-size:12px;color:var(--muted);margin-bottom:16px;padding:10px 12px;background:rgba(249,115,22,0.06);border:1px solid rgba(249,115,22,0.18);border-radius:8px">
-          <span data-en="A small launch event draws the wrong crowd. Hackathon draws builders — the people we want to hire, partner with, and build reputation among." data-zh="小型发布活动吸引的是错误的受众。黑客松吸引的是构建者 — 我们想招募、合作并建立声誉的那群人。">A small launch event draws the wrong crowd. Hackathon draws builders — the people we want to hire, partner with, and build reputation among.</span>
+        <div class="a" style="font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:24px">
+          <span data-en="Not a launch party. Not a meetup.<br>A hands-on builder event — connecting ChronoAI with the real tech and AI community in Singapore." data-zh="不是发布派对，不是见面会。<br>一个动手实践的构建者活动 — 将ChronoAI与新加坡真正的科技和AI社区连接起来。">Not a launch party. Not a meetup.<br>A hands-on builder event — connecting ChronoAI with the real tech and AI community in Singapore.</span>
         </div>
 
-        <div class="a">
-          <div class="brow" style="font-size:12px;padding:7px 0">
-            <div class="brow-icon" style="font-size:12px">🤝</div>
-            <div>
-              <span style="font-weight:700;color:var(--orange-light)" data-en="3 partnership targets" data-zh="3个合作目标">3 partnership targets</span>
-              <span style="color:var(--dim);font-size:11px" data-en=" — Nicholas presenting full debrief by Wed 11 Mar" data-zh=" — Nicholas 于3月11日（周三）前提交完整汇报"> — Nicholas presenting full debrief by Wed 11 Mar</span>
-            </div>
-          </div>
-          <div class="brow" style="font-size:12px;padding:7px 0">
-            <div class="brow-icon" style="font-size:12px">📅</div>
-            <div>
-              <span style="font-weight:700;color:var(--orange-light)" data-en="Hackathon date + brief" data-zh="黑客松日期+简报">Hackathon date + brief</span>
-              <span style="color:var(--dim);font-size:11px" data-en=" — to be locked by Fri 14 Mar" data-zh=" — 于3月14日（周五）前确定"> — to be locked by Fri 14 Mar</span>
-            </div>
-          </div>
-          <div class="brow" style="font-size:12px;padding:7px 0">
-            <div class="brow-icon" style="font-size:12px">📋</div>
-            <div>
-              <span style="font-weight:700;color:var(--orange-light)" data-en="SG AI activation plan" data-zh="新加坡AI激活计划">SG AI activation plan</span>
-              <span style="color:var(--dim);font-size:11px" data-en=" — written plan delivered by Fri 14 Mar" data-zh=" — 于3月14日（周五）前交付书面计划"> — written plan delivered by Fri 14 Mar</span>
-            </div>
-          </div>
-          <div class="brow" style="font-size:12px;padding:7px 0;border-bottom:none">
-            <div class="brow-icon" style="font-size:12px">⚡</div>
-            <div>
-              <span style="font-weight:700;color:var(--green-light)" data-en="n8n team automation" data-zh="n8n团队自动化">n8n team automation</span>
-              <span style="color:var(--dim);font-size:11px" data-en=" — email + dashboard live, compounding weekly" data-zh=" — 邮件 + 看板已上线，每周复利增长"> — email + dashboard live, compounding weekly</span>
-            </div>
+        <div class="a" style="display:flex;gap:10px;flex-wrap:wrap">
+          <div style="padding:8px 14px;border-radius:20px;background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.25);font-size:11px;font-weight:700;color:var(--orange-light)" data-en="🧠 AI + Tech Builders" data-zh="🧠 AI + 科技构建者">🧠 AI + Tech Builders</div>
+          <div style="padding:8px 14px;border-radius:20px;background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.25);font-size:11px;font-weight:700;color:var(--orange-light)" data-en="🤝 Partners + Communities" data-zh="🤝 合作伙伴 + 社区">🤝 Partners + Communities</div>
+          <div style="padding:8px 14px;border-radius:20px;background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.25);font-size:11px;font-weight:700;color:var(--orange-light)" data-en="📍 Singapore" data-zh="📍 新加坡">📍 Singapore</div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Status + Nicholas handoff -->
+      <div style="padding:64px 56px;display:flex;flex-direction:column;justify-content:center">
+        <div class="orb" style="width:320px;height:320px;background:radial-gradient(circle,#8B5CF6,transparent 70%);bottom:-80px;right:-60px;opacity:0.1;animation:f2 13s ease-in-out infinite;"></div>
+
+        <!-- Why -->
+        <div class="a" style="margin-bottom:24px;padding:14px 16px;background:rgba(249,115,22,0.06);border:1px solid rgba(249,115,22,0.18);border-radius:10px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:0.14em;color:var(--orange);text-transform:uppercase;margin-bottom:8px" data-en="WHY A HACKATHON?" data-zh="为什么选择黑客松？">WHY A HACKATHON?</div>
+          <div style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--muted)">
+            <div data-en="✦ Draws builders, not just attendees" data-zh="✦ 吸引构建者，而不只是参与者">✦ Draws builders, not just attendees</div>
+            <div data-en="✦ Creates real partnerships — tech, AI, community orgs" data-zh="✦ 建立真实合作关系 — 科技、AI、社区组织">✦ Creates real partnerships — tech, AI, community orgs</div>
+            <div data-en="✦ Positions ChronoAI as an innovation hub, not just a startup" data-zh="✦ 将ChronoAI定位为创新枢纽，而不只是初创公司">✦ Positions ChronoAI as an innovation hub, not just a startup</div>
+            <div data-en="✦ Pipeline for talent, press, and future product testing" data-zh="✦ 人才、媒体和未来产品测试的管道">✦ Pipeline for talent, press, and future product testing</div>
           </div>
         </div>
 
-        <div class="a" style="margin-top:14px;padding:12px 14px;background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.18);border-radius:10px;font-size:11px;color:var(--muted)">
-          <div style="font-size:10px;font-weight:700;letter-spacing:0.14em;color:var(--green-light);margin-bottom:5px" data-en="WEEK 11 · 4 HARD COMMITMENTS" data-zh="第11周 · 4项硬性承诺">WEEK 11 · 4 HARD COMMITMENTS</div>
-          <div>
-            <span data-en="✓ SoulGarden full acquisition live  ·  ✓ RiteSet published  ·  ✓ 3 Marc.AI demos booked  ·  ✓ Hackathon date locked" data-zh="✓ SoulGarden全面获客上线 · ✓ RiteSet发布 · ✓ 3次Marc.AI演示已预订 · ✓ 黑客松日期确定">✓ SoulGarden full acquisition live  ·  ✓ RiteSet published  ·  ✓ 3 Marc.AI demos booked  ·  ✓ Hackathon date locked</span>
+        <!-- Status -->
+        <div class="a" style="margin-bottom:20px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:0.14em;color:var(--dim);text-transform:uppercase;margin-bottom:10px" data-en="CURRENT STATUS" data-zh="当前状态">CURRENT STATUS</div>
+          <div class="brow" style="font-size:12px;padding:8px 0">
+            <div class="brow-icon">🔍</div>
+            <div>
+              <span style="font-weight:700;color:var(--off)" data-en="3 partnership targets identified" data-zh="已识别3个合作伙伴目标">3 partnership targets identified</span>
+              <span style="color:var(--dim);font-size:11px" data-en=" — scouted by Nicholas this week" data-zh=" — 本周由Nicholas侦察"> — scouted by Nicholas this week</span>
+            </div>
+          </div>
+          <div class="brow" style="font-size:12px;padding:8px 0">
+            <div class="brow-icon">📅</div>
+            <div>
+              <span style="font-weight:700;color:var(--off)" data-en="Target: 3rd week of March" data-zh="目标：3月第三周">Target: 3rd week of March</span>
+              <span style="color:var(--dim);font-size:11px" data-en=" — exact date TBC" data-zh=" — 具体日期待定"> — exact date TBC</span>
+            </div>
+          </div>
+          <div class="brow" style="font-size:12px;padding:8px 0;border-bottom:none">
+            <div class="brow-icon">👤</div>
+            <div>
+              <span style="font-weight:700;color:var(--off)" data-en="Lead: Nicholas (BD)" data-zh="负责人：Nicholas (BD)">Lead: Nicholas (BD)</span>
+              <span style="color:var(--dim);font-size:11px" data-en=" — full debrief + plan to team by Wed 11 Mar" data-zh=" — 3月11日（周三）前向团队完整汇报 + 计划"> — full debrief + plan to team by Wed 11 Mar</span>
+            </div>
           </div>
         </div>
+
+        <!-- Nicholas callout -->
+        <div class="a" style="padding:12px 14px;background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.22);border-radius:10px;font-size:12px">
+          <div style="font-weight:700;color:var(--purple);margin-bottom:4px" data-en="🎤 Nicholas to present:" data-zh="🎤 Nicholas 将汇报：">🎤 Nicholas to present:</div>
+          <div style="color:var(--muted)" data-en="Partner shortlist · Community connections · Proposed format + date · What we need from the team" data-zh="合作伙伴候选名单 · 社区连接 · 建议格式+日期 · 团队需要的支持">Partner shortlist · Community connections · Proposed format + date · What we need from the team</div>
+        </div>
+
+      </div>
+    </div>
   </div>
 
 
