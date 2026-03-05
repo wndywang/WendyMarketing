@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>ChronoAI — Week 10 Friday Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --purple:       #8B5CF6;
+  --green:        #10B981;
+  --green-light:  #34D399;
+  --blue:         #3B82F6;
+  --blue-light:   #93C5FD;
+  --amber:        #F59E0B;
+  --amber-light:  #FCD34D;
+  --red:          #EF4444;
+  --red-light:    #FCA5A5;
+  --orange:       #F97316;
+  --orange-light: #FB923C;
+  --white:        #FFFFFF;
+  --off:          rgba(255,255,255,0.88);
+  --muted:        rgba(255,255,255,0.62);
+  --dim:          rgba(255,255,255,0.32);
+  --dimmer:       rgba(255,255,255,0.12);
+  --border:       rgba(255,255,255,0.07);
+  --surface:      rgba(255,255,255,0.04);
+  --surface2:     rgba(255,255,255,0.07);
+  --bg:           #050507;
+}
+
+html, body {
+  width: 100%; height: 100%;
+  background: #000;
+  color: var(--white);
+  font-family: 'Inter', sans-serif;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+#outer {
+  width: 100vw; height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  background: #000;
+}
+
+#deck {
+  position: relative;
+  width: 1280px; height: 800px;
+  background: var(--bg);
+  overflow: hidden;
+  transform-origin: center center;
+}
+
+.slide {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  justify-content: center; align-items: flex-start;
+  padding: 72px 96px 80px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.6s cubic-bezier(.4,0,.2,1), transform 0.6s cubic-bezier(.4,0,.2,1);
+  transform: translateX(40px);
+}
+.slide.active { opacity: 1; pointer-events: all; transform: translateX(0); }
+.slide.prev   { opacity: 0; transform: translateX(-40px); }
+.slide.center { align-items: center; text-align: center; }
+
+.orb {
+  position: absolute; border-radius: 50%;
+  pointer-events: none; filter: blur(120px);
+}
+@keyframes f1 { 0%,100%{transform:translate(0,0) scale(1)}   50%{transform:translate(22px,-18px) scale(1.04)} }
+@keyframes f2 { 0%,100%{transform:translate(0,0) scale(1)}   50%{transform:translate(-16px,20px) scale(1.05)} }
+@keyframes f3 { 0%,100%{transform:translate(0,0)}            50%{transform:translate(14px,14px)} }
+
+#ui-top {
+  position: absolute; top: 0; left: 0; right: 0; z-index: 50;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 22px 32px; pointer-events: none;
+}
+.logo { font-size: 11px; font-weight: 700; letter-spacing: 0.2em; color: var(--dim); text-transform: uppercase; }
+.lang-toggle {
+  display: flex; background: var(--surface2);
+  border: 1px solid var(--border); border-radius: 24px; overflow: hidden;
+  pointer-events: all;
+}
+.lang-toggle button {
+  padding: 5px 14px; font-size: 11px; font-weight: 700;
+  letter-spacing: 0.06em; border: none; background: transparent;
+  color: var(--muted); cursor: pointer; transition: all 0.2s; font-family: inherit;
+}
+.lang-toggle button.active { background: var(--white); color: #000; border-radius: 22px; margin: 1px; }
+
+#ui-bot {
+  position: absolute; bottom: 0; left: 0; right: 0; z-index: 50;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 32px;
+}
+#counter { font-size: 11px; font-weight: 500; color: var(--dim); letter-spacing: 0.12em; }
+#dots    { display: flex; gap: 7px; align-items: center; }
+.dot {
+  width: 5px; height: 5px; border-radius: 3px;
+  background: var(--dimmer); cursor: pointer;
+  transition: all 0.35s cubic-bezier(.4,0,.2,1);
+}
+.dot.active { width: 22px; background: var(--white); }
+.nav-arrows { display: flex; gap: 6px; }
+.nav-btn {
+  width: 34px; height: 34px; border-radius: 50%;
+  border: 1px solid var(--border); background: var(--surface);
+  color: var(--off); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; transition: all 0.2s; font-family: inherit;
+}
+.nav-btn:hover { background: var(--surface2); border-color: var(--dim); }
+
+#progress {
+  position: absolute; top: 0; left: 0; height: 2px;
+  background: linear-gradient(90deg, var(--orange), var(--amber));
+  transition: width 0.55s cubic-bezier(.4,0,.2,1); z-index: 100;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.a { opacity: 0; }
+.slide.active .a { animation: fadeUp 0.5s ease both; }
+
+/* TYPE SCALE */
+.tag {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.22em;
+  color: var(--muted); text-transform: uppercase; margin-bottom: 20px;
+}
+.D  { font-size: 100px; font-weight: 900; line-height: 0.95; letter-spacing: -0.045em; }
+.D2 { font-size: 82px;  font-weight: 900; line-height: 0.95; letter-spacing: -0.04em; }
+.D3 { font-size: 64px;  font-weight: 900; line-height: 0.95; letter-spacing: -0.04em; }
+.D4 { font-size: 48px;  font-weight: 900; line-height: 0.95; letter-spacing: -0.035em; }
+.outline { -webkit-text-stroke: 1.5px rgba(255,255,255,0.2); color: transparent; }
+.why {
+  font-size: 15px; font-weight: 400; font-style: italic;
+  color: var(--muted); line-height: 1.65; margin-top: 16px; max-width: 580px;
+}
+.c-green  { color: var(--green-light); }
+.c-blue   { color: var(--blue-light); }
+.c-amber  { color: var(--amber-light); }
+.c-purple { color: #C4B5FD; }
+.c-red    { color: var(--red-light); }
+.c-orange { color: var(--orange-light); }
+.divider  { width: 32px; height: 2px; background: var(--border); margin: 18px 0; }
+
+/* PILLS */
+.pill {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 7px 14px; border-radius: 100px;
+  font-size: 12px; font-weight: 600; border: 1px solid;
+}
+.pill-green  { background: rgba(16,185,129,0.1);  border-color: rgba(16,185,129,0.28);  color: var(--green-light); }
+.pill-blue   { background: rgba(59,130,246,0.1);   border-color: rgba(59,130,246,0.28);  color: var(--blue-light); }
+.pill-amber  { background: rgba(245,158,11,0.1);   border-color: rgba(245,158,11,0.28);  color: var(--amber-light); }
+.pill-red    { background: rgba(239,68,68,0.1);    border-color: rgba(239,68,68,0.28);   color: var(--red-light); }
+.pill-orange { background: rgba(249,115,22,0.1);   border-color: rgba(249,115,22,0.28);  color: var(--orange-light); }
+.pill-muted  { background: var(--surface); border-color: var(--border); color: var(--muted); font-size: 11px; }
+.pill-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+
+/* LAYOUT */
+.layout { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; width: 100%; margin-top: 24px; align-items: start; }
+.layout3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 28px; width: 100%; margin-top: 24px; }
+
+/* QUOTE */
+.quote-block {
+  border-left: 2px solid var(--orange); padding-left: 18px;
+  font-size: 14px; font-style: italic; color: var(--muted); line-height: 1.75;
+}
+.quote-attr { font-style: normal; font-size: 10px; letter-spacing: 0.12em; margin-top: 6px; color: var(--dimmer); text-transform: uppercase; }
+
+/* METRIC ROW */
+.m-row { display: flex; align-items: center; gap: 14px; padding: 11px 0; border-bottom: 1px solid var(--border); }
+.m-row:last-child { border-bottom: none; }
+.m-num  { font-size: 22px; font-weight: 900; letter-spacing: -0.02em; min-width: 52px; }
+.m-desc { font-size: 12px; color: var(--muted); line-height: 1.45; }
+
+/* GOAL STATUS */
+.goal-card {
+  padding: 14px 16px; border-radius: 12px; border: 1px solid;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.goal-status {
+  font-size: 10px; font-weight: 800; letter-spacing: 0.14em;
+  text-transform: uppercase; display: flex; align-items: center; gap: 7px;
+}
+.goal-text { font-size: 12px; color: var(--muted); line-height: 1.5; }
+.goal-note { font-size: 11px; color: var(--dim); line-height: 1.4; }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+/* PROGRESS BAR */
+.progress-bar-wrap { width: 100%; background: var(--surface2); border-radius: 100px; height: 8px; overflow: hidden; margin-top: 8px; }
+.progress-bar-fill { height: 100%; border-radius: 100px; }
+
+/* CHECKLIST */
+.checklist { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.checklist li { display: flex; align-items: flex-start; gap: 10px; font-size: 12.5px; color: var(--off); line-height: 1.45; }
+.check-done { width: 17px; height: 17px; border-radius: 4px; background: rgba(16,185,129,0.2); border: 1.5px solid rgba(16,185,129,0.5); flex-shrink: 0; margin-top: 2px; display:flex;align-items:center;justify-content:center; font-size:9px; color:var(--green-light); }
+.check-partial { width: 17px; height: 17px; border-radius: 4px; background: rgba(245,158,11,0.15); border: 1.5px solid rgba(245,158,11,0.4); flex-shrink: 0; margin-top: 2px; display:flex;align-items:center;justify-content:center; font-size:9px; color:var(--amber-light); }
+.check-miss { width: 17px; height: 17px; border-radius: 4px; background: rgba(239,68,68,0.1); border: 1.5px solid rgba(239,68,68,0.35); flex-shrink: 0; margin-top: 2px; display:flex;align-items:center;justify-content:center; font-size:9px; color:var(--red-light); }
+.check-head { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 12px; }
+
+/* TRI PANEL */
+#s5 { padding: 0; }
+#s5 .tri { display: grid; grid-template-columns: 1fr 1fr 1fr; height: 100%; }
+#s5 .panel { padding: 52px 44px; display: flex; flex-direction: column; justify-content: center; overflow: hidden; position: relative; }
+#s5 .panel.b1 { border-right: 1px solid var(--border); }
+#s5 .panel.b2 { border-right: 1px solid var(--border); }
+</style>
+</head>
+<body>
+
+<div id="outer"><div id="deck">
+
+  <div id="progress" style="width:16.6%"></div>
+
+  <div id="ui-top">
+    <div class="logo">ChronoAI</div>
+    <div class="lang-toggle">
+      <button id="btn-en" class="active" onclick="setLang('en')">EN</button>
+      <button id="btn-zh" onclick="setLang('zh')">中文</button>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════
+       S1 — TITLE
+       ═══════════════════════════════ -->
+  <div class="slide center" id="s1">
+    <div class="orb" style="width:580px;height:580px;background:radial-gradient(circle,#F97316,transparent 70%);top:-180px;left:-80px;opacity:0.15;animation:f1 11s ease-in-out infinite;"></div>
+    <div class="orb" style="width:340px;height:340px;background:radial-gradient(circle,#10B981,transparent 70%);bottom:-100px;right:80px;opacity:0.10;animation:f2 13s ease-in-out infinite;"></div>
+    <div class="orb" style="width:200px;height:200px;background:radial-gradient(circle,#3B82F6,transparent 70%);top:60px;right:200px;opacity:0.09;animation:f3 9s ease-in-out infinite;"></div>
+
+    <div class="a tag">
+      <span data-en="ChronoAI · Brand Director · Week 10 · Friday Review · 6 March 2026" data-zh="ChronoAI · 品牌总监 · 第10周 · 周五复盘 · 2026年3月6日">ChronoAI · Brand Director · Week 10 · Friday Review · 6 March 2026</span>
+    </div>
+
+    <div class="a D" data-en="Reality Check." data-zh="现实检验。">Reality Check.</div>
+    <div class="a D outline" data-en="Recovery" data-zh="复盘">Recovery</div>
+    <div class="a D" data-en="+ Big Wins." data-zh="+ 重大成果。">+ Big Wins.</div>
+
+    <div class="divider a" style="margin:22px auto"></div>
+
+    <div class="a" style="font-size:15px;color:var(--muted);font-style:italic;text-align:center;max-width:620px">
+      <span data-en="We missed on SoulGarden acquisition. We pivoted fast. And Marc.AI just got its first market signal." data-zh="我们在SoulGarden用户获取上落后了。我们快速调整。而Marc.AI刚刚得到了第一个市场信号。">We missed on SoulGarden acquisition. We pivoted fast. And Marc.AI just got its first market signal.</span>
+    </div>
+
+    <div class="a pill-row" style="justify-content:center">
+      <div class="pill pill-green"><span>📊</span><span data-en="92% Goals Complete" data-zh="92% 目标完成">92% Goals Complete</span></div>
+      <div class="pill pill-green"><span>🎯</span><span data-en="Marc.AI — Hard YES PMF" data-zh="Marc.AI — 明确PMF正向信号">Marc.AI — Hard YES PMF</span></div>
+      <div class="pill pill-amber"><span>🔄</span><span data-en="SoulGarden — Acquisition Plan Activating" data-zh="SoulGarden — 用户获取计划启动">SoulGarden — Acquisition Plan Activating</span></div>
+    </div>
+
+    <div class="a" style="margin-top:16px;font-size:11px;color:var(--dim);letter-spacing:0.06em;text-align:center">
+      <span data-en="Week 10 · 2–6 March 2026 · Brand Director Weekly Review" data-zh="第10周 · 2026年3月2-6日 · 品牌总监周度复盘">Week 10 · 2–6 March 2026 · Brand Director Weekly Review</span>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════
+       S2 — GOAL COMPLETION
+       ═══════════════════════════════ -->
+  <div class="slide" id="s2">
+    <div class="orb" style="width:500px;height:500px;background:radial-gradient(circle,#F97316,transparent 70%);top:-180px;right:-120px;opacity:0.12;animation:f1 10s ease-in-out infinite;"></div>
+
+    <div class="a tag">
+      <span data-en="WEEK 10 · GOAL AUDIT · 11/12 COMPLETE · 92%" data-zh="第10周 · 目标审计 · 11/12完成 · 92%">WEEK 10 · GOAL AUDIT · 11/12 COMPLETE · 92%</span>
+    </div>
+
+    <div class="a" style="display:flex;align-items:baseline;gap:16px;margin-bottom:4px">
+      <div class="D3" data-en="This Week:" data-zh="本周：">This Week:</div>
+      <div style="display:inline-flex;align-items:center;gap:8px;padding:6px 18px;border-radius:10px;background:rgba(249,115,22,0.12);border:1.5px solid rgba(249,115,22,0.4);">
+        <span style="font-size:28px;font-weight:900;color:var(--green-light);letter-spacing:-0.03em;line-height:1;">92%</span>
+        <span style="font-size:11px;font-weight:700;color:var(--dim);letter-spacing:0.1em;text-transform:uppercase" data-en="Complete" data-zh="完成率">Complete</span>
+      </div>
+    </div>
+    <div class="a D3 outline" data-en="We Delivered." data-zh="我们交付了。">We Delivered.</div>
+
+    <div class="a" style="width:100%;margin-top:10px">
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" style="width:92%;background:linear-gradient(90deg,var(--green),var(--green-light))"></div>
+      </div>
+    </div>
+
+    <div class="a layout3" style="margin-top:20px">
+
+      <!-- Apps Goals 1+2 -->
+      <div>
+        <div class="check-head c-green" data-en="APPS · GOALS 1+2" data-zh="应用 · 目标1+2">APPS · GOALS 1+2</div>
+        <ul class="checklist">
+          <li><div class="check-done">✓</div><span data-en="Dashboard fully automated via n8n — live + self-updating" data-zh="看板已通过 n8n 全自动化 — 实时更新">Dashboard fully automated via n8n — live + self-updating</span></li>
+          <li><div class="check-done">✓</div><span data-en="D1/D7 data captured (26 downloads — full acquisition launching next week)" data-zh="D1/D7数据已收集（26下载量 — 全面获客下周启动）">D1/D7 data captured (26 downloads — full acquisition launching next week)</span></li>
+          <li><div class="check-partial">→</div><span data-en="RiteSet — launching this week (slight delay, committed)" data-zh="RiteSet — 本周发布（轻微延迟，已承诺完成）">RiteSet — launching this week (slight delay, committed)</span></li>
+          <li><div class="check-done">✓</div><span data-en="Both Gate 1 clocks confirmed running" data-zh="两款应用第一关计时均已启动">Both Gate 1 clocks confirmed running</span></li>
+        </ul>
+      </div>
+
+      <!-- Marc.AI Goal 3 -->
+      <div>
+        <div class="check-head c-blue" data-en="MARC.AI · GOAL 3" data-zh="MARC.AI · 目标3">MARC.AI · GOAL 3</div>
+        <ul class="checklist">
+          <li><div class="check-done">✓</div><span data-en="10 conversations at PRCA (target: 3)" data-zh="PRCA 10次对话（目标：3次）">10 conversations at PRCA (target: 3)</span></li>
+          <li><div class="check-done">✓</div><span data-en="Feedback doc written + shared with VP" data-zh="反馈文档已撰写并发给VP">Feedback doc written + shared with VP</span></li>
+          <li><div class="check-done">✓</div><span data-en="PMF verdict: HARD YES" data-zh="PMF结论：明确肯定">PMF verdict: HARD YES</span></li>
+          <li><div class="check-done">✓</div><span data-en="10 B2B contacts logged (agencies)" data-zh="10个B2B联系人已记录（代理商）">10 B2B contacts logged (agencies)</span></li>
+        </ul>
+      </div>
+
+      <!-- Vision + Team Goals 4+5 -->
+      <div>
+        <div class="check-head c-amber" data-en="VISION + TEAM · 4+5" data-zh="愿景+团队 · 4+5">VISION + TEAM · 4+5</div>
+        <ul class="checklist">
+          <li><div class="check-partial">→</div><span data-en="SG AI activation plan — pivoting to Hackathon (plan in progress)" data-zh="新加坡AI激活计划 — 转向黑客松（计划进行中）">SG AI activation plan — pivoting to Hackathon (plan in progress)</span></li>
+          <li><div class="check-done">✓</div><span data-en="3+ AI communities / partnerships identified for Hackathon" data-zh="已为黑客松识别3+个AI社群/合作伙伴">3+ AI communities / partnerships identified for Hackathon</span></li>
+          <li><div class="check-done">✓</div><span data-en="1 automation per team member — n8n email automation" data-zh="每位成员1个自动化 — n8n 邮件自动化">1 automation per team member — n8n email automation</span></li>
+          <li><div class="check-done">✓</div><span data-en="Team automation log shared — n8n app dashboard automation" data-zh="团队自动化日志已分享 — n8n 应用看板自动化">Team automation log shared — n8n app dashboard automation</span></li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════
+       S3 — SOULGARDEN: REALITY + PLAN
+       ═══════════════════════════════ -->
+  <div class="slide" id="s3">
+    <div class="orb" style="width:600px;height:600px;background:radial-gradient(circle,#059669,transparent 70%);top:-200px;right:-160px;opacity:0.12;animation:f1 9s ease-in-out infinite;"></div>
+
+    <div class="a tag">
+      <span data-en="SOULGARDEN · REALITY CHECK · WEEK 1 POST-LAUNCH · RECOVERY PLAN" data-zh="SOULGARDEN · 现实检验 · 上线第1周 · 恢复计划">SOULGARDEN · REALITY CHECK · WEEK 1 POST-LAUNCH · RECOVERY PLAN</span>
+    </div>
+
+    <div class="layout">
+      <!-- LEFT: Reality -->
+      <div>
+        <div class="a D4" data-en="The Truth." data-zh="现实。">The Truth.</div>
+        <div class="a D4 c-red" data-en="Then The Plan." data-zh="然后是计划。">Then The Plan.</div>
+
+        <div class="a" style="margin-top:16px;padding:14px 16px;background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.2);border-radius:12px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:0.14em;color:var(--red-light);margin-bottom:6px" data-en="WEEK 1 REALITY" data-zh="第一周现实">WEEK 1 REALITY</div>
+          <div style="font-size:13px;color:var(--muted);line-height:1.55" data-en="26 downloads, mostly internal. Zero external acquisition had launched. All plans were built but pending approval. This is on us — we should have communicated the bottleneck earlier." data-zh="26个下载量，基本为内部人员。没有外部用户获取活动启动。所有计划已完成但待审批。这是我们的责任 — 我们应该更早沟通瓶颈所在。">26 downloads, mostly internal. Zero external acquisition had launched. All plans were built but pending approval. This is on us — we should have communicated the bottleneck earlier.</div>
+        </div>
+
+        <div class="a" style="margin-top:10px;padding:14px 16px;background:rgba(16,185,129,0.05);border:1px solid rgba(16,185,129,0.18);border-radius:12px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:0.14em;color:var(--green-light);margin-bottom:6px" data-en="WHAT WAS READY BUT BLOCKED" data-zh="已准备但受阻的内容">WHAT WAS READY BUT BLOCKED</div>
+            <div style="font-size:12.5px;color:var(--muted);line-height:1.6">
+            <div data-en="→ Dashboard fully automated via n8n — live, self-updating, no manual work" data-zh="→ 看板已通过 n8n 全自动化 — 实时运行，自动更新，无需人工维护">→ Dashboard fully automated via n8n — live, self-updating, no manual work</div>
+            <div data-en="→ Press release drafted → 100 media contacts ready" data-zh="→ 新闻稿已撰写 → 100个媒体联系人就绪">→ Press release drafted → 100 media contacts ready</div>
+            <div data-en="→ 200 KOL outreach plan ready to launch" data-zh="→ 200个KOL外联方案已准备好启动">→ 200 KOL outreach plan ready to launch</div>
+            <div data-en="→ 4-week daily social content scripts complete" data-zh="→ 4周每日社交内容脚本已完成">→ 4-week daily social content scripts complete</div>
+            <div data-en="→ UGC brief sent to agency — pending budget approval" data-zh="→ UGC简报已发送给代理商 — 等待预算审批">→ UGC brief sent to agency — pending budget approval</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Next Week Plan -->
+      <div>
+        <div class="a tag" style="margin-bottom:14px">
+          <span data-en="WEEK 11 · ACQUISITION LAUNCH · FULL ACTIVATION" data-zh="第11周 · 用户获取启动 · 全面激活">WEEK 11 · ACQUISITION LAUNCH · FULL ACTIVATION</span>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div class="a m-row">
+            <div class="m-num c-green" style="font-size:13px;min-width:60px" data-en="200" data-zh="200">200</div>
+            <div class="m-desc" data-en="KOL outreach begins — organic, no budget. Target: early adopter seeding." data-zh="KOL外联启动 — 有机增长，无预算。目标：早期用户种子。">KOL outreach begins — organic, no budget. Target: early adopter seeding.</div>
+          </div>
+          <div class="a m-row">
+            <div class="m-num c-green" style="font-size:13px;min-width:60px" data-en="100" data-zh="100">100</div>
+            <div class="m-desc" data-en="Media contacts receive press release. Earned coverage campaign starts." data-zh="100个媒体联系人收到新闻稿。赚取媒体报道活动启动。">Media contacts receive press release. Earned coverage campaign starts.</div>
+          </div>
+          <div class="a m-row">
+            <div class="m-num c-green" style="font-size:13px;min-width:60px" data-en="28" data-zh="28">28</div>
+            <div class="m-desc" data-en="Days of daily social content — every platform, every day. Content already scripted." data-zh="28天每日社交内容 — 每个平台，每天发布。内容脚本已完成。">Days of daily social content — every platform, every day. Content already scripted.</div>
+          </div>
+          <div class="a m-row" style="border-bottom:none">
+            <div class="m-num c-green" style="font-size:13px;min-width:60px" data-en="Reddit" data-zh="Reddit">Reddit</div>
+            <div class="m-desc" data-en="Community activation — organic seeding + engagement in wellness/spiritual communities." data-zh="社群激活 — 在健康/灵性社群中进行有机种子传播和互动。">Community activation — organic seeding + engagement in wellness/spiritual communities.</div>
+          </div>
+        </div>
+
+        <div class="a" style="margin-top:14px;padding:12px 14px;background:rgba(249,115,22,0.07);border:1px solid rgba(249,115,22,0.2);border-radius:10px;font-size:12px;color:var(--muted);line-height:1.6">
+          <span style="color:var(--orange-light);font-weight:700" data-en="Goal: " data-zh="目标：">Goal: </span>
+          <span data-en="Week 11 = first real external signal. Gate 1 clock is running. We measure everything." data-zh="第11周 = 第一个真实外部信号。第一关计时正在运行。我们追踪一切。">Week 11 = first real external signal. Gate 1 clock is running. We measure everything.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════
+       S4 — MARC.AI: THE BIG WIN
+       ═══════════════════════════════ -->
+  <div class="slide center" id="s4">
+    <div class="orb" style="width:800px;height:800px;background:radial-gradient(circle,#1D4ED8,transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);opacity:0.10;animation:f3 12s ease-in-out infinite;"></div>
+    <div class="orb" style="width:280px;height:280px;background:radial-gradient(circle,#7C3AED,transparent 70%);top:30px;right:80px;opacity:0.09;animation:f1 9s ease-in-out infinite;"></div>
+
+    <div class="a tag">
+      <span data-en="MARC.AI · PRCA WEDNESDAY 4 MARCH · PRODUCT-MARKET FIT CONFIRMED" data-zh="MARC.AI · PRCA 3月4日（周三）· 产品市场契合已确认">MARC.AI · PRCA WEDNESDAY 4 MARCH · PRODUCT-MARKET FIT CONFIRMED</span>
+    </div>
+
+    <div class="a D2" data-en="The Market Said" data-zh="市场给出了">The Market Said</div>
+    <div class="a D2 c-blue" data-en="Hard YES." data-zh="明确肯定。">Hard YES.</div>
+
+    <div class="a why" style="text-align:center;margin:14px auto 0;max-width:680px">
+      <span data-en="After Wendy's keynote at PRCA, 10 agencies approached us. They want Marc.AI for their client servicing teams. This is the clearest B2B signal ChronoAI has received." data-zh="在 Wendy 的 PRCA 主题演讲后，10家代理商主动接触我们。他们希望将 Marc.AI 用于客户服务团队。这是 ChronoAI 收到的最明确的B2B信号。">After Wendy's keynote at PRCA, 10 agencies approached us. They want Marc.AI for their client servicing teams. This is the clearest B2B signal ChronoAI has received.</span>
+    </div>
+
+    <div class="a" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;width:100%;margin-top:24px">
+      <div style="padding:20px 16px;background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.2);border-radius:14px;text-align:center">
+        <div style="font-size:40px;font-weight:900;color:var(--blue-light);letter-spacing:-0.04em;line-height:1">10</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:5px;letter-spacing:0.04em" data-en="Conversations at PRCA" data-zh="PRCA对话次数">Conversations at PRCA</div>
+        <div style="font-size:10px;color:var(--dim);margin-top:2px" data-en="Target was 3" data-zh="目标为3次">Target was 3</div>
+      </div>
+      <div style="padding:20px 16px;background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.2);border-radius:14px;text-align:center">
+        <div style="font-size:40px;font-weight:900;color:var(--blue-light);letter-spacing:-0.04em;line-height:1">10</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:5px;letter-spacing:0.04em" data-en="Emails Collected" data-zh="已收集邮箱">Emails Collected</div>
+        <div style="font-size:10px;color:var(--dim);margin-top:2px" data-en="First B2B pipeline" data-zh="首批B2B管道">First B2B pipeline</div>
+      </div>
+      <div style="padding:20px 16px;background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.2);border-radius:14px;text-align:center">
+        <div style="font-size:22px;font-weight:900;color:var(--green-light);letter-spacing:-0.03em;line-height:1.2" data-en="Agency" data-zh="代理商">Agency</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:5px;letter-spacing:0.04em" data-en="Client Type" data-zh="客户类型">Client Type</div>
+        <div style="font-size:10px;color:var(--dim);margin-top:2px" data-en="Want it for client servicing" data-zh="用于客户服务团队">Want it for client servicing</div>
+      </div>
+      <div style="padding:20px 16px;background:rgba(139,92,246,0.06);border:1px solid rgba(139,92,246,0.2);border-radius:14px;text-align:center">
+        <div style="font-size:22px;font-weight:900;color:#C4B5FD;letter-spacing:-0.03em;line-height:1.2" data-en="HARD" data-zh="明确">HARD</div>
+        <div style="font-size:22px;font-weight:900;color:#C4B5FD;letter-spacing:-0.03em;line-height:1.2" data-en="YES" data-zh="肯定">YES</div>
+        <div style="font-size:10px;color:var(--dim);margin-top:5px" data-en="PMF Verdict" data-zh="PMF结论">PMF Verdict</div>
+      </div>
+    </div>
+
+    <div class="a pill-row" style="justify-content:center;margin-top:18px">
+      <div class="pill pill-blue"><span>📋</span><span data-en="Feedback Doc Shared with VP" data-zh="反馈文档已分享给VP">Feedback Doc Shared with VP</span></div>
+      <div class="pill pill-green"><span>🚀</span><span data-en="Follow-up Sequence Starts Next Week" data-zh="跟进序列下周启动">Follow-up Sequence Starts Next Week</span></div>
+    </div>
+
+    <div class="a" style="margin-top:12px;font-size:11px;color:var(--dim);letter-spacing:0.05em;text-align:center">
+      <span data-en="Next: Nurture all 10 contacts · Schedule demos · Define Marc.AI pricing + MVP scope" data-zh="下一步：跟进10个联系人 · 安排演示 · 定义Marc.AI定价+MVP范围">Next: Nurture all 10 contacts · Schedule demos · Define Marc.AI pricing + MVP scope</span>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════
+       S5 — SINGAPORE HUB + HACKATHON
+       ═══════════════════════════════ -->
+  <div class="slide" id="s5">
+    <div class="tri">
+
+      <!-- Pivot -->
+      <div class="panel b1">
+        <div class="orb" style="width:380px;height:380px;background:radial-gradient(circle,#F97316,transparent 70%);top:-120px;left:-100px;opacity:0.13;animation:f1 10s ease-in-out infinite;"></div>
+
+        <div class="a tag c-orange" data-en="PIVOT · SMART DECISION" data-zh="战略调整 · 正确决策">PIVOT · SMART DECISION</div>
+        <div class="a D4 c-orange" data-en="Small Event" data-zh="小型活动">Small Event</div>
+        <div class="a D4 outline" data-en="→ Hackathon." data-zh="→ 黑客松。">→ Hackathon.</div>
+
+        <div class="a why" style="font-size:13px;margin-top:12px" data-en="The small launch event was the wrong move. VP was right. We pivoted fast — Hackathon in 3rd week of March is the right play. It attracts builders, not just attendees." data-zh="小型发布活动是错误的决定。VP的批评完全正确。我们快速调整 — 三月第三周的黑客松才是正确方向。它吸引的是构建者，而不只是观众。">The small launch event was the wrong move. VP was right. We pivoted fast — Hackathon in 3rd week of March is the right play. It attracts builders, not just attendees.</div>
+
+        <div style="margin-top:20px">
+          <div class="a m-row"><div class="m-num c-orange" style="font-size:13px;min-width:64px" data-en="Before" data-zh="之前">Before</div><div class="m-desc" data-en="Small office event, unclear target, <10 people" data-zh="小型办公室活动，目标不清晰，不到10人">Small office event, unclear target, &lt;10 people</div></div>
+          <div class="a m-row"><div class="m-num c-orange" style="font-size:13px;min-width:64px" data-en="Now" data-zh="现在">Now</div><div class="m-desc" data-en="Hackathon — 3rd week March, date TBC" data-zh="黑客松 — 三月第三周，日期待定">Hackathon — 3rd week March, date TBC</div></div>
+          <div class="a m-row" style="border-bottom:none"><div class="m-num c-orange" style="font-size:13px;min-width:64px" data-en="Goal" data-zh="目标">Goal</div><div class="m-desc" data-en="Attract builders, generate talent pipeline, build brand" data-zh="吸引构建者，建立人才储备，强化品牌">Attract builders, generate talent pipeline, build brand</div></div>
+        </div>
+      </div>
+
+      <!-- Nicholas BD -->
+      <div class="panel b2" style="background:rgba(59,130,246,0.02)">
+        <div class="orb" style="width:340px;height:340px;background:radial-gradient(circle,#1D4ED8,transparent 70%);bottom:-100px;left:50%;transform:translateX(-50%);opacity:0.11;animation:f3 11s ease-in-out infinite;"></div>
+
+        <div class="a tag c-blue" data-en="BD · NICHOLAS · PARTNERSHIPS" data-zh="BD · Nicholas · 合作伙伴">BD · NICHOLAS · PARTNERSHIPS</div>
+        <div class="a D4 c-blue" data-en="3 Partnerships" data-zh="3个合作">3 Partnerships</div>
+        <div class="a D4 outline" data-en="Identified." data-zh="已识别。">Identified.</div>
+
+        <div class="a why" style="font-size:13px;margin-top:12px" data-en="Nicholas scouted external org events this week. He has identified 3 partnership targets. Full debrief coming separately — these will feed into the Hackathon and SG AI community plan." data-zh="Nicholas本周侦察了外部组织活动。已识别3个合作目标。完整汇报单独提供 — 这些将为黑客松和新加坡AI社群计划提供支撑。">Nicholas scouted external org events this week. He has identified 3 partnership targets. Full debrief coming separately — these will feed into the Hackathon and SG AI community plan.</div>
+
+        <div style="margin-top:20px">
+          <div class="a m-row"><div class="m-num c-blue" style="font-size:22px;min-width:40px">3</div><div class="m-desc" data-en="Partnership targets identified (Nicholas to share full debrief)" data-zh="已识别3个合作目标（Nicholas将提供完整汇报）">Partnership targets identified (Nicholas to share full debrief)</div></div>
+          <div class="a m-row" style="border-bottom:none"><div class="m-num c-blue" style="font-size:13px;min-width:40px" data-en="Next" data-zh="下一步">Next</div><div class="m-desc" data-en="Qualify partnerships → tie to Hackathon or SG AI Hub" data-zh="评估合作伙伴 → 关联黑客松或新加坡AI枢纽">Qualify partnerships → tie to Hackathon or SG AI Hub</div></div>
+        </div>
+      </div>
+
+      <!-- Week 11 Preview -->
+      <div class="panel" style="background:rgba(16,185,129,0.01)">
+        <div class="orb" style="width:380px;height:380px;background:radial-gradient(circle,#059669,transparent 70%);bottom:-120px;right:-100px;opacity:0.11;animation:f2 12s ease-in-out infinite;"></div>
+
+        <div class="a tag c-green" data-en="WEEK 11 · WHAT WE CHANGE" data-zh="第11周 · 我们的改变">WEEK 11 · WHAT WE CHANGE</div>
+        <div class="a D4 c-green" data-en="Measure First." data-zh="先量化。">Measure First.</div>
+        <div class="a D4 outline" data-en="Then Execute." data-zh="再执行。">Then Execute.</div>
+
+        <div class="a why" style="font-size:13px;margin-top:12px" data-en="Every initiative next week has a target metric and a deliverable before we start. No more fluffy plans." data-zh="下周每项举措在启动前都有明确的目标指标和交付物。不再有模糊计划。">Every initiative next week has a target metric and a deliverable before we start. No more fluffy plans.</div>
+
+        <div style="margin-top:20px">
+          <div class="a m-row"><div class="m-num c-green" style="font-size:13px;min-width:72px" data-en="SoulGarden" data-zh="SoulGarden">SoulGarden</div><div class="m-desc" data-en="Launch full acquisition: 200 KOLs, PR, social, Reddit" data-zh="全面启动获客：200 KOL、PR、社交、Reddit">Launch full acquisition: 200 KOLs, PR, social, Reddit</div></div>
+          <div class="a m-row"><div class="m-num c-green" style="font-size:13px;min-width:72px" data-en="RiteSet" data-zh="RiteSet">RiteSet</div><div class="m-desc" data-en="Publish on App Store — D1 tracking live from minute 1" data-zh="在应用商店发布 — 第一分钟起D1追踪上线">Publish on App Store — D1 tracking live from minute 1</div></div>
+          <div class="a m-row"><div class="m-num c-green" style="font-size:13px;min-width:72px" data-en="Marc.AI" data-zh="Marc.AI">Marc.AI</div><div class="m-desc" data-en="Follow-up all 10 PRCA contacts. Schedule 3 demos." data-zh="跟进全部10个PRCA联系人。安排3次演示。">Follow-up all 10 PRCA contacts. Schedule 3 demos.</div></div>
+          <div class="a m-row" style="border-bottom:none"><div class="m-num c-green" style="font-size:13px;min-width:72px" data-en="Hackathon" data-zh="黑客松">Hackathon</div><div class="m-desc" data-en="Lock date + brief. Nicholas share partnership debrief." data-zh="确定日期+简报。Nicholas分享合作汇报。">Lock date + brief. Nicholas share partnership debrief.</div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════
+       S6 — CLOSING
+       ═══════════════════════════════ -->
+  <div class="slide center" id="s6">
+    <div class="orb" style="width:600px;height:600px;background:radial-gradient(circle,#7C3AED,transparent 70%);bottom:-200px;left:-100px;opacity:0.13;animation:f1 14s ease-in-out infinite;"></div>
+    <div class="orb" style="width:300px;height:300px;background:radial-gradient(circle,#3B82F6,transparent 70%);top:-60px;right:120px;opacity:0.09;animation:f2 10s ease-in-out infinite;"></div>
+
+    <div class="a tag">
+      <span data-en="WEEK 10 CLOSE · BRAND DIRECTOR · 6 MARCH 2026" data-zh="第10周收尾 · 品牌总监 · 2026年3月6日">WEEK 10 CLOSE · BRAND DIRECTOR · 6 MARCH 2026</span>
+    </div>
+
+    <div class="a D3" data-en="Honest." data-zh="诚实。">Honest.</div>
+    <div class="a D3 c-purple" data-en="Accountable." data-zh="负责。">Accountable.</div>
+    <div class="a D3 outline" data-en="Moving Forward." data-zh="向前迈进。">Moving Forward.</div>
+
+    <div class="divider a" style="margin:20px auto"></div>
+
+    <div class="a" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;width:100%;max-width:780px">
+      <div style="padding:18px;background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.2);border-radius:12px;text-align:left">
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.14em;color:var(--red-light);margin-bottom:8px" data-en="WHAT WE MISSED" data-zh="我们的不足">WHAT WE MISSED</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.6" data-en="SoulGarden acquisition pending approval. RiteSet delayed — committing this week. Communication of blockers was too slow." data-zh="SoulGarden获客等待审批。RiteSet轻微延迟 — 本周承诺完成。对阻碍因素的沟通太慢。">SoulGarden acquisition pending approval. RiteSet delayed — committing this week. Communication of blockers was too slow.</div>
+      </div>
+      <div style="padding:18px;background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.2);border-radius:12px;text-align:left">
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.14em;color:var(--green-light);margin-bottom:8px" data-en="WHAT WE WON" data-zh="我们的成果">WHAT WE WON</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.6" data-en="Marc.AI PMF Hard YES · 10 convos · 10 emails. Dashboard fully automated via n8n. Team automation live: email + dashboard. 3 Hackathon partnerships. Gate 1 clocks running." data-zh="Marc.AI PMF 明确可行 · 10次对话 · 10个邮件。看板通过 n8n 全自动化。团队自动化上线：邮件 + 看板。3个黑客松合作伙伴。第一关计时运行中。">Marc.AI PMF Hard YES · 10 convos · 10 emails. Dashboard fully automated via n8n. Team automation live: email + dashboard. 3 Hackathon partnerships. Gate 1 clocks running.</div>
+      </div>
+      <div style="padding:18px;background:rgba(139,92,246,0.06);border:1px solid rgba(139,92,246,0.2);border-radius:12px;text-align:left">
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.14em;color:#C4B5FD;margin-bottom:8px" data-en="WEEK 11 COMMITMENT" data-zh="第11周承诺">WEEK 11 COMMITMENT</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.6" data-en="Full SoulGarden acquisition live. RiteSet published. 3 Marc.AI demos booked. Hackathon date locked. No silent failures." data-zh="SoulGarden用户获取全面上线。RiteSet发布。3次Marc.AI演示已预订。黑客松日期确定。无静默失败。">Full SoulGarden acquisition live. RiteSet published. 3 Marc.AI demos booked. Hackathon date locked. No silent failures.</div>
+      </div>
+    </div>
+
+    <div class="a quote-block" style="margin-top:24px;max-width:640px;border-color:#8B5CF6">
+      <span data-en='"The goal is not to be right. The goal is to move ChronoAI forward — faster every week."' data-zh='"目标不是证明自己是对的。目标是推动 ChronoAI 前进 — 每周都更快。"'>"The goal is not to be right. The goal is to move ChronoAI forward — faster every week."</span>
+      <div class="quote-attr" data-en="Wendy · Brand Director · ChronoAI · Week 10 Close" data-zh="Wendy · 品牌总监 · ChronoAI · 第10周收尾">Wendy · Brand Director · ChronoAI · Week 10 Close</div>
+    </div>
+  </div>
+
+
+  <!-- BOTTOM UI -->
+  <div id="ui-bot">
+    <div id="counter">01 / 06</div>
+    <div id="dots"></div>
+    <div class="nav-arrows">
+      <button class="nav-btn" onclick="prevSlide()">←</button>
+      <button class="nav-btn" onclick="nextSlide()">→</button>
+    </div>
+  </div>
+
+</div></div>
+
+<script>
+let cur = 0, lang = 'en';
+const slides = Array.from(document.querySelectorAll('.slide'));
+const N = slides.length;
+
+const dotsEl = document.getElementById('dots');
+slides.forEach((_,i) => {
+  const d = document.createElement('div');
+  d.className = 'dot' + (i===0?' active':'');
+  d.onclick = () => goTo(i);
+  dotsEl.appendChild(d);
+});
+
+function goTo(n) {
+  if (n === cur) return;
+  slides[cur].classList.remove('active');
+  slides[cur].classList.add('prev');
+  const old = cur;
+  setTimeout(() => slides[old].classList.remove('prev'), 650);
+  cur = ((n%N)+N)%N;
+  slides[cur].classList.add('active');
+  triggerAnims(slides[cur]);
+  updateUI();
+}
+function nextSlide() { goTo(cur+1); }
+function prevSlide() { goTo(cur-1); }
+
+function triggerAnims(slide) {
+  const items = slide.querySelectorAll('.a');
+  items.forEach((el,i) => {
+    el.style.animation = 'none';
+    el.offsetHeight;
+    el.style.animation = `fadeUp 0.52s ease ${(0.04+i*0.07).toFixed(2)}s both`;
+  });
+}
+
+function updateUI() {
+  document.getElementById('counter').textContent =
+    String(cur+1).padStart(2,'0') + ' / ' + String(N).padStart(2,'0');
+  document.querySelectorAll('.dot').forEach((d,i) => d.classList.toggle('active', i===cur));
+  document.getElementById('progress').style.width = ((cur+1)/N*100)+'%';
+}
+
+function setLang(l) {
+  lang = l;
+  document.getElementById('btn-en').classList.toggle('active', l==='en');
+  document.getElementById('btn-zh').classList.toggle('active', l==='zh');
+  document.querySelectorAll('[data-en]').forEach(el => {
+    el.textContent = el.getAttribute('data-'+l) || el.getAttribute('data-en');
+  });
+  document.body.style.fontFamily = l==='zh'
+    ? "'Noto Sans SC','Inter',sans-serif"
+    : "'Inter',sans-serif";
+  document.documentElement.lang = l==='zh' ? 'zh-Hans' : 'en';
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key==='ArrowRight'||e.key===' '||e.key==='PageDown') { e.preventDefault(); nextSlide(); }
+  if (e.key==='ArrowLeft' ||e.key==='PageUp')                { e.preventDefault(); prevSlide(); }
+});
+
+function scaleDeck() {
+  const s = Math.min(window.innerWidth/1280, window.innerHeight/800, 1.2);
+  document.getElementById('deck').style.transform = `scale(${s})`;
+}
+window.addEventListener('resize', scaleDeck);
+scaleDeck();
+
+slides[0].classList.add('active');
+triggerAnims(slides[0]);
+updateUI();
+</script>
+</body>
+</html>
