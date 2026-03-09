@@ -123,7 +123,7 @@ html, body { width:100%;height:100%;background:#000;color:var(--white);font-fami
 <body>
 <div id="outer"><div id="deck">
 
-  <div id="progress" style="width:14.2%"></div>
+  <div id="progress" style="width:12.5%"></div>
 
   <div id="ui-top">
     <div style="display:flex;align-items:center;gap:14px">
@@ -170,149 +170,257 @@ html, body { width:100%;height:100%;background:#000;color:var(--white);font-fami
 
 
   <!-- ════════════════════════════
-       S2 — PRODUCT DASHBOARD
+       S2 — CONSUMER APPS: GODGPT + SOULGARDEN
        ════════════════════════════ -->
   <div class="slide no-pad" id="s2">
-
-    <div style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;height:100%">
+    <div style="display:grid;grid-template-columns:1fr 1fr;height:100%">
 
       <!-- GODGPT -->
-      <div style="padding:36px 36px 28px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);position:relative;display:flex;flex-direction:column">
-        <div class="orb" style="width:250px;height:250px;background:radial-gradient(circle,#8B5CF6,transparent 70%);top:-60px;left:-40px;opacity:0.1;animation:f1 10s ease-in-out infinite;"></div>
+      <div style="padding:52px 40px 40px;border-right:1px solid var(--border);position:relative;display:flex;flex-direction:column">
+        <div class="orb" style="width:280px;height:280px;background:radial-gradient(circle,#8B5CF6,transparent 70%);top:-80px;left:-60px;opacity:0.11;animation:f1 10s ease-in-out infinite;"></div>
 
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+          <div class="a" style="font-size:28px;font-weight:900;letter-spacing:-0.02em;color:var(--purple-light)">🔮 GodGPT</div>
+          <div class="a" style="padding:5px 14px;border-radius:20px;background:rgba(139,92,246,0.12);border:1px solid rgba(139,92,246,0.3);font-size:10px;font-weight:700;color:var(--purple-light);letter-spacing:0.08em" data-en="LIVE" data-zh="运营中">LIVE</div>
+        </div>
+
+        <div class="a" style="font-size:13px;color:var(--off);font-weight:600;margin-bottom:4px" data-en="AI-powered spiritual wellness &amp; self-reflection app" data-zh="AI驱动的灵性健康与自我反思应用">AI-powered spiritual wellness &amp; self-reflection app</div>
+        <div class="a" style="font-size:11px;color:var(--muted);line-height:1.55;margin-bottom:16px">
+          <span data-en="For seekers who want clarity, not noise. Personal aura readings, guided reflections, and inner truth discovery through conversational AI." data-zh="为追求内在清明而非噪音的人而建。通过对话式AI提供个人能量解读、引导式反思和内在真相探索。">For seekers who want clarity, not noise. Personal aura readings, guided reflections, and inner truth discovery through conversational AI.</span>
+        </div>
+
+        <div class="a" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px">
+          <div style="padding:12px 8px;border-radius:10px;background:var(--surface);border:1px solid var(--border);text-align:center">
+            <div style="font-size:28px;font-weight:900;color:var(--purple-light);line-height:1" data-en="—" data-zh="—">—</div>
+            <div style="font-size:9px;color:var(--dim);margin-top:4px" data-en="Downloads" data-zh="下载量">Downloads</div>
+          </div>
+          <div style="padding:12px 8px;border-radius:10px;background:var(--surface);border:1px solid var(--border);text-align:center">
+            <div style="font-size:28px;font-weight:900;color:var(--purple-light);line-height:1" data-en="—" data-zh="—">—</div>
+            <div style="font-size:9px;color:var(--dim);margin-top:4px" data-en="MAU" data-zh="月活">MAU</div>
+          </div>
+          <div style="padding:12px 8px;border-radius:10px;background:var(--surface);border:1px solid var(--border);text-align:center">
+            <div style="font-size:28px;font-weight:900;color:var(--purple-light);line-height:1" data-en="—" data-zh="—">—</div>
+            <div style="font-size:9px;color:var(--dim);margin-top:4px" data-en="D7 Retention" data-zh="D7留存">D7 Retention</div>
+          </div>
+        </div>
+
+        <!-- Timeline -->
+        <div class="a" style="margin-bottom:14px">
+          <div style="font-size:9px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--dim);margin-bottom:6px" data-en="PRODUCT TIMELINE" data-zh="产品时间线">PRODUCT TIMELINE</div>
+          <div style="display:flex;align-items:center;gap:0;width:100%;height:24px;border-radius:6px;overflow:hidden;background:var(--surface);border:1px solid var(--border)">
+            <div style="flex:1;height:100%;background:rgba(139,92,246,0.2);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:var(--purple-light);letter-spacing:0.06em;border-right:1px solid var(--border)">✓ BUILT</div>
+            <div style="flex:1;height:100%;background:rgba(139,92,246,0.2);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:var(--purple-light);letter-spacing:0.06em;border-right:1px solid var(--border)">✓ LAUNCHED</div>
+            <div style="flex:1;height:100%;background:rgba(139,92,246,0.35);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;color:#fff;letter-spacing:0.06em;border-right:1px solid var(--border)">◉ GROWTH</div>
+            <div style="flex:1;height:100%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:600;color:var(--dim);letter-spacing:0.06em">SCALE</div>
+          </div>
+        </div>
+
+        <div class="a" style="flex:1;display:flex;flex-direction:column;gap:6px">
+          <div style="font-size:9px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--dim);margin-bottom:2px" data-en="THIS WEEK" data-zh="本周进展">THIS WEEK</div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.5">
+            <span data-en="• Align growth strategy with new brand direction<br>• Define content calendar for manifestation community<br>• Set baseline metrics for Week 12 targets" data-zh="• 将增长策略与新品牌方向对齐<br>• 为显化社区制定内容日历<br>• 为第12周目标设定基准指标">• Align growth strategy with new brand direction<br>• Define content calendar for manifestation community<br>• Set baseline metrics for Week 12 targets</span>
+          </div>
+        </div>
+
+        <div class="a" style="margin-top:10px;padding:8px 12px;background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.2);border-radius:8px;display:flex;align-items:center;gap:8px">
+          <div style="width:28px;height:28px;border-radius:50%;background:rgba(139,92,246,0.15);border:1.5px solid rgba(139,92,246,0.4);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--purple-light);flex-shrink:0">D</div>
           <div>
-            <div class="a" style="font-size:10px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--purple-light);margin-bottom:3px">🔮 GODGPT</div>
-            <div class="a" style="font-size:9px;color:var(--dim);letter-spacing:0.06em" data-en="Spiritual wellness app · Live on App Store" data-zh="灵性健康应用 · 已上线App Store">Spiritual wellness app · Live on App Store</div>
+            <span style="font-size:11px;font-weight:700;color:var(--off)">Dione</span>
+            <span style="font-size:10px;color:var(--dim)"> · </span>
+            <span style="font-size:10px;color:var(--muted)" data-en="Content + Growth + Community" data-zh="内容 + 增长 + 社区">Content + Growth + Community</span>
           </div>
-          <div class="a" style="padding:4px 12px;border-radius:20px;background:rgba(139,92,246,0.12);border:1px solid rgba(139,92,246,0.3);font-size:9px;font-weight:700;color:var(--purple-light);letter-spacing:0.08em" data-en="LIVE" data-zh="运营中">LIVE</div>
-        </div>
-
-        <div class="a" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">
-          <div style="padding:10px;border-radius:8px;background:var(--surface);border:1px solid var(--border);text-align:center">
-            <div style="font-size:24px;font-weight:900;color:var(--purple-light);line-height:1" data-en="—" data-zh="—">—</div>
-            <div style="font-size:9px;color:var(--dim);margin-top:3px" data-en="Total Downloads" data-zh="总下载量">Total Downloads</div>
-          </div>
-          <div style="padding:10px;border-radius:8px;background:var(--surface);border:1px solid var(--border);text-align:center">
-            <div style="font-size:24px;font-weight:900;color:var(--purple-light);line-height:1" data-en="—" data-zh="—">—</div>
-            <div style="font-size:9px;color:var(--dim);margin-top:3px" data-en="MAU" data-zh="月活">MAU</div>
-          </div>
-          <div style="padding:10px;border-radius:8px;background:var(--surface);border:1px solid var(--border);text-align:center">
-            <div style="font-size:24px;font-weight:900;color:var(--purple-light);line-height:1" data-en="—" data-zh="—">—</div>
-            <div style="font-size:9px;color:var(--dim);margin-top:3px" data-en="D7 Retention" data-zh="D7留存">D7 Retention</div>
-          </div>
-        </div>
-
-        <div class="a" style="font-size:11px;color:var(--muted);line-height:1.55;flex:1">
-          <span data-en="Owner: TBD · Status: Live, needs growth strategy alignment with new brand direction" data-zh="负责人：待定 · 状态：已上线，需结合新品牌方向制定增长策略">Owner: TBD · Status: Live, needs growth strategy alignment with new brand direction</span>
         </div>
       </div>
 
       <!-- SOULGARDEN -->
-      <div style="padding:36px 36px 28px;border-bottom:1px solid var(--border);position:relative;display:flex;flex-direction:column">
-        <div class="orb" style="width:250px;height:250px;background:radial-gradient(circle,#10B981,transparent 70%);bottom:-60px;right:-40px;opacity:0.1;animation:f2 12s ease-in-out infinite;"></div>
+      <div style="padding:52px 40px 40px;position:relative;display:flex;flex-direction:column">
+        <div class="orb" style="width:280px;height:280px;background:radial-gradient(circle,#10B981,transparent 70%);bottom:-80px;right:-60px;opacity:0.11;animation:f2 12s ease-in-out infinite;"></div>
 
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+          <div class="a" style="font-size:28px;font-weight:900;letter-spacing:-0.02em;color:var(--green-light)">🌱 SoulGarden</div>
+          <div class="a" style="padding:5px 14px;border-radius:20px;background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.3);font-size:10px;font-weight:700;color:var(--red-light);letter-spacing:0.08em" data-en="NEEDS GROWTH" data-zh="需增长">NEEDS GROWTH</div>
+        </div>
+
+        <div class="a" style="font-size:13px;color:var(--off);font-weight:600;margin-bottom:4px" data-en="Manifestation &amp; intention-setting app for daily clarity" data-zh="显化与意图设定应用 · 日常清明指引">Manifestation &amp; intention-setting app for daily clarity</div>
+        <div class="a" style="font-size:11px;color:var(--muted);line-height:1.55;margin-bottom:16px">
+          <span data-en="For people who want to manifest with structure, not wishful thinking. Daily rituals, guided intentions, and a community of seekers growing together." data-zh="为那些想用方法论而非空想来显化的人而建。日常仪式、引导式意图设定、和一群共同成长的同行者社区。">For people who want to manifest with structure, not wishful thinking. Daily rituals, guided intentions, and a community of seekers growing together.</span>
+        </div>
+
+        <div class="a" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px">
+          <div style="padding:12px 8px;border-radius:10px;background:rgba(239,68,68,0.05);border:1px solid rgba(239,68,68,0.18);text-align:center">
+            <div style="font-size:28px;font-weight:900;color:var(--red-light);line-height:1">29</div>
+            <div style="font-size:9px;color:var(--dim);margin-top:4px" data-en="Downloads" data-zh="下载量">Downloads</div>
+          </div>
+          <div style="padding:12px 8px;border-radius:10px;background:rgba(239,68,68,0.05);border:1px solid rgba(239,68,68,0.18);text-align:center">
+            <div style="font-size:28px;font-weight:900;color:var(--red-light);line-height:1">~12</div>
+            <div style="font-size:9px;color:var(--dim);margin-top:4px" data-en="External" data-zh="外部用户">External</div>
+          </div>
+          <div style="padding:12px 8px;border-radius:10px;background:rgba(239,68,68,0.05);border:1px solid rgba(239,68,68,0.18);text-align:center">
+            <div style="font-size:28px;font-weight:900;color:var(--red-light);line-height:1" data-en="—" data-zh="—">—</div>
+            <div style="font-size:9px;color:var(--dim);margin-top:4px" data-en="D7 Retention" data-zh="D7留存">D7 Retention</div>
+          </div>
+        </div>
+
+        <!-- Timeline -->
+        <div class="a" style="margin-bottom:14px">
+          <div style="font-size:9px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--dim);margin-bottom:6px" data-en="PRODUCT TIMELINE" data-zh="产品时间线">PRODUCT TIMELINE</div>
+          <div style="display:flex;align-items:center;gap:0;width:100%;height:24px;border-radius:6px;overflow:hidden;background:var(--surface);border:1px solid var(--border)">
+            <div style="flex:1;height:100%;background:rgba(16,185,129,0.2);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:var(--green-light);letter-spacing:0.06em;border-right:1px solid var(--border)">✓ BUILT</div>
+            <div style="flex:1;height:100%;background:rgba(16,185,129,0.2);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:var(--green-light);letter-spacing:0.06em;border-right:1px solid var(--border)">✓ LIVE W09</div>
+            <div style="flex:1;height:100%;background:rgba(239,68,68,0.25);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;color:var(--red-light);letter-spacing:0.06em;border-right:1px solid var(--border)">◉ ACQ.</div>
+            <div style="flex:1;height:100%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:600;color:var(--dim);letter-spacing:0.06em">SCALE</div>
+          </div>
+        </div>
+
+        <div class="a" style="flex:1;display:flex;flex-direction:column;gap:6px">
+          <div style="font-size:9px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--dim);margin-bottom:2px" data-en="THIS WEEK" data-zh="本周进展">THIS WEEK</div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.5">
+            <span data-en="• Community-led acquisition via WhatsApp + AI influencers<br>• 10 TikTok accounts running outreach to 200 creators<br>• Manifestation community LIVE — driving organic installs" data-zh="• 通过WhatsApp + AI网红驱动社区获客<br>• 10个TikTok矩阵账号触达200位创作者<br>• 显化社区已上线 — 推动自然安装">• Community-led acquisition via WhatsApp + AI influencers<br>• 10 TikTok accounts running outreach to 200 creators<br>• Manifestation community LIVE — driving organic installs</span>
+          </div>
+        </div>
+
+        <div class="a" style="margin-top:10px;padding:8px 12px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);border-radius:8px;display:flex;align-items:center;gap:8px">
+          <div style="width:28px;height:28px;border-radius:50%;background:rgba(16,185,129,0.15);border:1.5px solid rgba(16,185,129,0.4);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--green-light);flex-shrink:0">D</div>
           <div>
-            <div class="a" style="font-size:10px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--green-light);margin-bottom:3px">🌱 SOULGARDEN</div>
-            <div class="a" style="font-size:9px;color:var(--dim);letter-spacing:0.06em" data-en="Manifestation app · Launched Week 09" data-zh="显化应用 · 第9周上线">Manifestation app · Launched Week 09</div>
+            <span style="font-size:11px;font-weight:700;color:var(--off)">Dione</span>
+            <span style="font-size:10px;color:var(--dim)"> · </span>
+            <span style="font-size:10px;color:var(--muted)" data-en="Acquisition + Community + Influencers" data-zh="获客 + 社区 + 网红推广">Acquisition + Community + Influencers</span>
           </div>
-          <div class="a" style="padding:4px 12px;border-radius:20px;background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.3);font-size:9px;font-weight:700;color:var(--red-light);letter-spacing:0.08em" data-en="NEEDS GROWTH" data-zh="需增长">NEEDS GROWTH</div>
-        </div>
-
-        <div class="a" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">
-          <div style="padding:10px;border-radius:8px;background:rgba(239,68,68,0.05);border:1px solid rgba(239,68,68,0.15);text-align:center">
-            <div style="font-size:24px;font-weight:900;color:var(--red-light);line-height:1">29</div>
-            <div style="font-size:9px;color:var(--dim);margin-top:3px" data-en="Total Downloads" data-zh="总下载量">Total Downloads</div>
-          </div>
-          <div style="padding:10px;border-radius:8px;background:rgba(239,68,68,0.05);border:1px solid rgba(239,68,68,0.15);text-align:center">
-            <div style="font-size:24px;font-weight:900;color:var(--red-light);line-height:1">~12</div>
-            <div style="font-size:9px;color:var(--dim);margin-top:3px" data-en="External Users" data-zh="外部用户">External Users</div>
-          </div>
-          <div style="padding:10px;border-radius:8px;background:rgba(239,68,68,0.05);border:1px solid rgba(239,68,68,0.15);text-align:center">
-            <div style="font-size:24px;font-weight:900;color:var(--red-light);line-height:1" data-en="—" data-zh="—">—</div>
-            <div style="font-size:9px;color:var(--dim);margin-top:3px" data-en="D7 Retention" data-zh="D7留存">D7 Retention</div>
-          </div>
-        </div>
-
-        <div class="a" style="font-size:11px;color:var(--muted);line-height:1.55;flex:1">
-          <span data-en="Owner: Dione · Week 11 focus: Community-led acquisition via Manifestation community + AI influencer outreach" data-zh="负责人：Dione · 第11周重点：通过显化社区 + AI网红触达进行社区驱动获客">Owner: Dione · Week 11 focus: Community-led acquisition via Manifestation community + AI influencer outreach</span>
-        </div>
-      </div>
-
-      <!-- RITESET -->
-      <div style="padding:36px 36px 28px;border-right:1px solid var(--border);position:relative;display:flex;flex-direction:column">
-        <div class="orb" style="width:250px;height:250px;background:radial-gradient(circle,#F97316,transparent 70%);top:-60px;right:-40px;opacity:0.08;animation:f3 9s ease-in-out infinite;"></div>
-
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-          <div>
-            <div class="a" style="font-size:10px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--orange-light);margin-bottom:3px">⚡ RITESET</div>
-            <div class="a" style="font-size:9px;color:var(--dim);letter-spacing:0.06em" data-en="Habit ritual tracker · Approved, preparing launch" data-zh="习惯仪式追踪器 · 已批准，准备发布">Habit ritual tracker · Approved, preparing launch</div>
-          </div>
-          <div class="a" style="padding:4px 12px;border-radius:20px;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3);font-size:9px;font-weight:700;color:var(--amber-light);letter-spacing:0.08em" data-en="LAUNCHING" data-zh="即将上线">LAUNCHING</div>
-        </div>
-
-        <div class="a" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">
-          <div style="padding:10px;border-radius:8px;background:rgba(245,158,11,0.05);border:1px solid rgba(245,158,11,0.15);text-align:center">
-            <div style="font-size:24px;font-weight:900;color:var(--amber-light);line-height:1" data-en="—" data-zh="—">—</div>
-            <div style="font-size:9px;color:var(--dim);margin-top:3px" data-en="Downloads" data-zh="下载量">Downloads</div>
-          </div>
-          <div style="padding:10px;border-radius:8px;background:rgba(245,158,11,0.05);border:1px solid rgba(245,158,11,0.15);text-align:center">
-            <div style="font-size:24px;font-weight:900;color:var(--amber-light);line-height:1" data-en="—" data-zh="—">—</div>
-            <div style="font-size:9px;color:var(--dim);margin-top:3px" data-en="App Store" data-zh="商店状态">App Store</div>
-          </div>
-          <div style="padding:10px;border-radius:8px;background:rgba(245,158,11,0.05);border:1px solid rgba(245,158,11,0.15);text-align:center">
-            <div style="font-size:24px;font-weight:900;color:var(--amber-light);line-height:1" data-en="—" data-zh="—">—</div>
-            <div style="font-size:9px;color:var(--dim);margin-top:3px" data-en="Gate 1 Status" data-zh="Gate 1 状态">Gate 1 Status</div>
-          </div>
-        </div>
-
-        <div class="a" style="font-size:11px;color:var(--muted);line-height:1.55;flex:1">
-          <span data-en="Owner: Melissa · Week 11 focus: App Store launch + Fitness/Wellness community activation" data-zh="负责人：Melissa · 第11周重点：上线App Store + 激活健身/健康社区">Owner: Melissa · Week 11 focus: App Store launch + Fitness/Wellness community activation</span>
-        </div>
-      </div>
-
-      <!-- MARC.AI -->
-      <div style="padding:36px 36px 28px;position:relative;display:flex;flex-direction:column">
-        <div class="orb" style="width:250px;height:250px;background:radial-gradient(circle,#3B82F6,transparent 70%);bottom:-60px;left:-40px;opacity:0.1;animation:f1 11s ease-in-out infinite;"></div>
-
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-          <div>
-            <div class="a" style="font-size:10px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--blue-light);margin-bottom:3px">🧠 MARC.AI</div>
-            <div class="a" style="font-size:9px;color:var(--dim);letter-spacing:0.06em" data-en="B2B marketing SaaS · Building MVP" data-zh="B2B营销SaaS · 构建MVP中">B2B marketing SaaS · Building MVP</div>
-          </div>
-          <div class="a" style="padding:4px 12px;border-radius:20px;background:rgba(59,130,246,0.12);border:1px solid rgba(59,130,246,0.3);font-size:9px;font-weight:700;color:var(--blue-light);letter-spacing:0.08em" data-en="BUILDING" data-zh="开发中">BUILDING</div>
-        </div>
-
-        <div class="a" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">
-          <div style="padding:10px;border-radius:8px;background:rgba(59,130,246,0.05);border:1px solid rgba(59,130,246,0.15);text-align:center">
-            <div style="font-size:24px;font-weight:900;color:var(--blue-light);line-height:1">10</div>
-            <div style="font-size:9px;color:var(--dim);margin-top:3px" data-en="B2B Contacts" data-zh="B2B联系人">B2B Contacts</div>
-          </div>
-          <div style="padding:10px;border-radius:8px;background:rgba(16,185,129,0.05);border:1px solid rgba(16,185,129,0.15);text-align:center">
-            <div style="font-size:24px;font-weight:900;color:var(--green-light);line-height:1" data-en="YES" data-zh="是">YES</div>
-            <div style="font-size:9px;color:var(--dim);margin-top:3px" data-en="PMF Signal" data-zh="PMF信号">PMF Signal</div>
-          </div>
-          <div style="padding:10px;border-radius:8px;background:rgba(59,130,246,0.05);border:1px solid rgba(59,130,246,0.15);text-align:center">
-            <div style="font-size:24px;font-weight:900;color:var(--blue-light);line-height:1" data-en="—" data-zh="—">—</div>
-            <div style="font-size:9px;color:var(--dim);margin-top:3px" data-en="MVP Progress" data-zh="MVP进度">MVP Progress</div>
-          </div>
-        </div>
-
-        <div class="a" style="font-size:11px;color:var(--muted);line-height:1.55;flex:1">
-          <span data-en="Owner: Wendy · Week 11 focus: MVP build with Avatar team + follow-up 10 PRCA contacts + define pricing" data-zh="负责人：Wendy · 第11周重点：联合Avatar团队构建MVP + 跟进10位PRCA联系人 + 定义定价">Owner: Wendy · Week 11 focus: MVP build with Avatar team + follow-up 10 PRCA contacts + define pricing</span>
         </div>
       </div>
 
     </div>
-
   </div>
 
 
   <!-- ════════════════════════════
-       S3 — TEAM OWNERSHIP MATRIX
+       S3 — NEW PRODUCTS: RITESET + MARC.AI
        ════════════════════════════ -->
-  <div class="slide" id="s3" style="padding-top:56px;padding-bottom:56px">
+  <div class="slide no-pad" id="s3">
+    <div style="display:grid;grid-template-columns:1fr 1fr;height:100%">
+
+      <!-- RITESET -->
+      <div style="padding:52px 40px 40px;border-right:1px solid var(--border);position:relative;display:flex;flex-direction:column">
+        <div class="orb" style="width:280px;height:280px;background:radial-gradient(circle,#F97316,transparent 70%);top:-80px;right:-60px;opacity:0.09;animation:f3 9s ease-in-out infinite;"></div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+          <div class="a" style="font-size:28px;font-weight:900;letter-spacing:-0.02em;color:var(--orange-light)">⚡ RiteSet</div>
+          <div class="a" style="padding:5px 14px;border-radius:20px;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3);font-size:10px;font-weight:700;color:var(--amber-light);letter-spacing:0.08em" data-en="LAUNCHING" data-zh="即将上线">LAUNCHING</div>
+        </div>
+
+        <div class="a" style="font-size:13px;color:var(--off);font-weight:600;margin-bottom:4px" data-en="Habit ritual tracker that makes discipline feel like identity" data-zh="让自律变成身份认同的习惯仪式追踪器">Habit ritual tracker that makes discipline feel like identity</div>
+        <div class="a" style="font-size:11px;color:var(--muted);line-height:1.55;margin-bottom:16px">
+          <span data-en="For fitness enthusiasts, wellness seekers, and anyone building daily rituals. Track habits as sacred routines, not checklists. Paired with the Fitness/Wellness community." data-zh="为健身爱好者、养生追求者、以及所有想建立日常仪式感的人而建。把习惯当作仪式追踪，不是打卡清单。搭配健身/健康社区。">For fitness enthusiasts, wellness seekers, and anyone building daily rituals. Track habits as sacred routines, not checklists. Paired with the Fitness/Wellness community.</span>
+        </div>
+
+        <div class="a" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px">
+          <div style="padding:12px 8px;border-radius:10px;background:rgba(245,158,11,0.05);border:1px solid rgba(245,158,11,0.18);text-align:center">
+            <div style="font-size:28px;font-weight:900;color:var(--amber-light);line-height:1" data-en="—" data-zh="—">—</div>
+            <div style="font-size:9px;color:var(--dim);margin-top:4px" data-en="Downloads" data-zh="下载量">Downloads</div>
+          </div>
+          <div style="padding:12px 8px;border-radius:10px;background:rgba(245,158,11,0.05);border:1px solid rgba(245,158,11,0.18);text-align:center">
+            <div style="font-size:28px;font-weight:900;color:var(--amber-light);line-height:1" data-en="—" data-zh="—">—</div>
+            <div style="font-size:9px;color:var(--dim);margin-top:4px" data-en="App Store" data-zh="商店状态">App Store</div>
+          </div>
+          <div style="padding:12px 8px;border-radius:10px;background:rgba(245,158,11,0.05);border:1px solid rgba(245,158,11,0.18);text-align:center">
+            <div style="font-size:28px;font-weight:900;color:var(--amber-light);line-height:1" data-en="—" data-zh="—">—</div>
+            <div style="font-size:9px;color:var(--dim);margin-top:4px" data-en="Gate 1" data-zh="Gate 1">Gate 1</div>
+          </div>
+        </div>
+
+        <!-- Timeline -->
+        <div class="a" style="margin-bottom:14px">
+          <div style="font-size:9px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--dim);margin-bottom:6px" data-en="PRODUCT TIMELINE" data-zh="产品时间线">PRODUCT TIMELINE</div>
+          <div style="display:flex;align-items:center;gap:0;width:100%;height:24px;border-radius:6px;overflow:hidden;background:var(--surface);border:1px solid var(--border)">
+            <div style="flex:1;height:100%;background:rgba(249,115,22,0.2);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:var(--orange-light);letter-spacing:0.06em;border-right:1px solid var(--border)">✓ BUILT</div>
+            <div style="flex:1;height:100%;background:rgba(249,115,22,0.2);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:var(--orange-light);letter-spacing:0.06em;border-right:1px solid var(--border)">✓ APPROVED</div>
+            <div style="flex:1;height:100%;background:rgba(245,158,11,0.35);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;color:#fff;letter-spacing:0.06em;border-right:1px solid var(--border)">◉ LAUNCH</div>
+            <div style="flex:1;height:100%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:600;color:var(--dim);letter-spacing:0.06em">GROWTH</div>
+          </div>
+        </div>
+
+        <div class="a" style="flex:1;display:flex;flex-direction:column;gap:6px">
+          <div style="font-size:9px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--dim);margin-bottom:2px" data-en="THIS WEEK" data-zh="本周进展">THIS WEEK</div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.5">
+            <span data-en="• Publish on App Store this week<br>• Press release distribution to media contacts<br>• Fitness/Wellness WhatsApp community activated" data-zh="• 本周上架App Store<br>• 新闻稿分发至媒体联系人<br>• 健身/健康WhatsApp社区已激活">• Publish on App Store this week<br>• Press release distribution to media contacts<br>• Fitness/Wellness WhatsApp community activated</span>
+          </div>
+        </div>
+
+        <div class="a" style="margin-top:10px;padding:8px 12px;background:rgba(249,115,22,0.08);border:1px solid rgba(249,115,22,0.2);border-radius:8px;display:flex;align-items:center;gap:8px">
+          <div style="width:28px;height:28px;border-radius:50%;background:rgba(249,115,22,0.15);border:1.5px solid rgba(249,115,22,0.4);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--orange-light);flex-shrink:0">M</div>
+          <div>
+            <span style="font-size:11px;font-weight:700;color:var(--off)">Melissa</span>
+            <span style="font-size:10px;color:var(--dim)"> · </span>
+            <span style="font-size:10px;color:var(--muted)" data-en="Launch + Press + Fitness Community" data-zh="上线 + 媒体 + 健身社区">Launch + Press + Fitness Community</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- MARC.AI -->
+      <div style="padding:52px 40px 40px;position:relative;display:flex;flex-direction:column">
+        <div class="orb" style="width:280px;height:280px;background:radial-gradient(circle,#3B82F6,transparent 70%);bottom:-80px;left:-60px;opacity:0.11;animation:f1 11s ease-in-out infinite;"></div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+          <div class="a" style="font-size:28px;font-weight:900;letter-spacing:-0.02em;color:var(--blue-light)">🧠 Marc.AI</div>
+          <div class="a" style="padding:5px 14px;border-radius:20px;background:rgba(59,130,246,0.12);border:1px solid rgba(59,130,246,0.3);font-size:10px;font-weight:700;color:var(--blue-light);letter-spacing:0.08em" data-en="BUILDING" data-zh="开发中">BUILDING</div>
+        </div>
+
+        <div class="a" style="font-size:13px;color:var(--off);font-weight:600;margin-bottom:4px" data-en="AI-powered marketing automation SaaS for agencies" data-zh="面向代理商的AI营销自动化SaaS">AI-powered marketing automation SaaS for agencies</div>
+        <div class="a" style="font-size:11px;color:var(--muted);line-height:1.55;margin-bottom:16px">
+          <span data-en="B2B product packaging 14 years of global marketing expertise into an AI-powered platform. Target: agencies who need client servicing at scale. PMF confirmed at PRCA conference." data-zh="B2B产品，将14年全球营销经验打包成AI驱动平台。目标：需要规模化客户服务的代理商。PRCA大会确认PMF。">B2B product packaging 14 years of global marketing expertise into an AI-powered platform. Target: agencies who need client servicing at scale. PMF confirmed at PRCA conference.</span>
+        </div>
+
+        <div class="a" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px">
+          <div style="padding:12px 8px;border-radius:10px;background:rgba(59,130,246,0.05);border:1px solid rgba(59,130,246,0.18);text-align:center">
+            <div style="font-size:28px;font-weight:900;color:var(--blue-light);line-height:1">10</div>
+            <div style="font-size:9px;color:var(--dim);margin-top:4px" data-en="B2B Leads" data-zh="B2B线索">B2B Leads</div>
+          </div>
+          <div style="padding:12px 8px;border-radius:10px;background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.18);text-align:center">
+            <div style="font-size:28px;font-weight:900;color:var(--green-light);line-height:1" data-en="YES" data-zh="是">YES</div>
+            <div style="font-size:9px;color:var(--dim);margin-top:4px" data-en="PMF Signal" data-zh="PMF信号">PMF Signal</div>
+          </div>
+          <div style="padding:12px 8px;border-radius:10px;background:rgba(59,130,246,0.05);border:1px solid rgba(59,130,246,0.18);text-align:center">
+            <div style="font-size:28px;font-weight:900;color:var(--blue-light);line-height:1" data-en="—" data-zh="—">—</div>
+            <div style="font-size:9px;color:var(--dim);margin-top:4px" data-en="MVP %" data-zh="MVP进度">MVP %</div>
+          </div>
+        </div>
+
+        <!-- Timeline -->
+        <div class="a" style="margin-bottom:14px">
+          <div style="font-size:9px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--dim);margin-bottom:6px" data-en="PRODUCT TIMELINE" data-zh="产品时间线">PRODUCT TIMELINE</div>
+          <div style="display:flex;align-items:center;gap:0;width:100%;height:24px;border-radius:6px;overflow:hidden;background:var(--surface);border:1px solid var(--border)">
+            <div style="flex:1;height:100%;background:rgba(59,130,246,0.2);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:var(--blue-light);letter-spacing:0.06em;border-right:1px solid var(--border)">✓ CONCEPT</div>
+            <div style="flex:1;height:100%;background:rgba(59,130,246,0.2);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:var(--blue-light);letter-spacing:0.06em;border-right:1px solid var(--border)">✓ PMF</div>
+            <div style="flex:1;height:100%;background:rgba(59,130,246,0.35);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;color:#fff;letter-spacing:0.06em;border-right:1px solid var(--border)">◉ MVP</div>
+            <div style="flex:1;height:100%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:600;color:var(--dim);letter-spacing:0.06em">BETA</div>
+          </div>
+        </div>
+
+        <div class="a" style="flex:1;display:flex;flex-direction:column;gap:6px">
+          <div style="font-size:9px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--dim);margin-bottom:2px" data-en="THIS WEEK" data-zh="本周进展">THIS WEEK</div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.5">
+            <span data-en="• MVP build with Avatar team (Marketing + Product + Avatar)<br>• Follow-up nurture sequence to 10 PRCA agency contacts<br>• Define pricing model + target audience profile" data-zh="• 联合Avatar团队构建MVP（营销+产品+Avatar）<br>• 跟进10位PRCA代理商联系人的培育序列<br>• 确定定价模型 + 目标用户画像">• MVP build with Avatar team (Marketing + Product + Avatar)<br>• Follow-up nurture sequence to 10 PRCA agency contacts<br>• Define pricing model + target audience profile</span>
+          </div>
+        </div>
+
+        <div class="a" style="margin-top:10px;padding:8px 12px;background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.2);border-radius:8px;display:flex;align-items:center;gap:8px">
+          <div style="width:28px;height:28px;border-radius:50%;background:rgba(59,130,246,0.15);border:1.5px solid rgba(59,130,246,0.4);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--blue-light);flex-shrink:0">W</div>
+          <div>
+            <span style="font-size:11px;font-weight:700;color:var(--off)">Wendy</span>
+            <span style="font-size:10px;color:var(--dim)"> · </span>
+            <span style="font-size:10px;color:var(--muted)" data-en="MVP + B2B Pipeline + Pricing" data-zh="MVP + B2B管线 + 定价">MVP + B2B Pipeline + Pricing</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════
+       S4 — TEAM OWNERSHIP MATRIX
+       ════════════════════════════ -->
+  <div class="slide" id="s4" style="padding-top:56px;padding-bottom:56px">
     <div class="orb" style="width:500px;height:500px;background:radial-gradient(circle,#F97316,transparent 70%);bottom:-180px;right:-120px;opacity:0.09;animation:f2 12s ease-in-out infinite;"></div>
 
     <div class="a tag">
@@ -390,9 +498,9 @@ html, body { width:100%;height:100%;background:#000;color:var(--white);font-fami
 
 
   <!-- ════════════════════════════
-       S4 — WEEK 11 GOAL PROGRESS
+       S5 — WEEK 11 GOAL PROGRESS
        ════════════════════════════ -->
-  <div class="slide" id="s4" style="padding-top:56px;padding-bottom:56px">
+  <div class="slide" id="s5" style="padding-top:56px;padding-bottom:56px">
     <div class="orb" style="width:500px;height:500px;background:radial-gradient(circle,#10B981,transparent 70%);top:-180px;left:-120px;opacity:0.10;animation:f1 10s ease-in-out infinite;"></div>
 
     <div class="a tag">
@@ -489,9 +597,9 @@ html, body { width:100%;height:100%;background:#000;color:var(--white);font-fami
 
 
   <!-- ════════════════════════════
-       S5 — KEY ACHIEVEMENTS & FINDINGS
+       S6 — KEY ACHIEVEMENTS & FINDINGS
        ════════════════════════════ -->
-  <div class="slide" id="s5" style="padding-top:56px;padding-bottom:56px">
+  <div class="slide" id="s6" style="padding-top:56px;padding-bottom:56px">
     <div class="orb" style="width:500px;height:500px;background:radial-gradient(circle,#7C3AED,transparent 70%);bottom:-180px;left:-120px;opacity:0.10;animation:f2 12s ease-in-out infinite;"></div>
 
     <div class="a tag">
@@ -538,9 +646,9 @@ html, body { width:100%;height:100%;background:#000;color:var(--white);font-fami
 
 
   <!-- ════════════════════════════
-       S6 — WEEK 12 COMMITMENTS
+       S7 — WEEK 12 COMMITMENTS
        ════════════════════════════ -->
-  <div class="slide" id="s6" style="padding-top:56px;padding-bottom:56px">
+  <div class="slide" id="s7" style="padding-top:56px;padding-bottom:56px">
     <div class="orb" style="width:500px;height:500px;background:radial-gradient(circle,#3B82F6,transparent 70%);top:-180px;right:-120px;opacity:0.10;animation:f1 11s ease-in-out infinite;"></div>
 
     <div class="a tag">
@@ -604,9 +712,9 @@ html, body { width:100%;height:100%;background:#000;color:var(--white);font-fami
 
 
   <!-- ════════════════════════════
-       S7 — CLOSING
+       S8 — CLOSING
        ════════════════════════════ -->
-  <div class="slide center" id="s7">
+  <div class="slide center" id="s8">
     <div class="orb" style="width:600px;height:600px;background:radial-gradient(circle,#7C3AED,transparent 70%);bottom:-200px;left:-100px;opacity:0.13;animation:f1 14s ease-in-out infinite;"></div>
     <div class="orb" style="width:300px;height:300px;background:radial-gradient(circle,#10B981,transparent 70%);top:-60px;right:120px;opacity:0.09;animation:f2 10s ease-in-out infinite;"></div>
 
@@ -646,7 +754,7 @@ html, body { width:100%;height:100%;background:#000;color:var(--white);font-fami
 
   <!-- BOTTOM UI -->
   <div id="ui-bot">
-    <div id="counter">01 / 07</div>
+    <div id="counter">01 / 08</div>
     <div id="dots"></div>
     <div class="nav-arrows">
       <button class="nav-btn" onclick="prevSlide()">←</button>
