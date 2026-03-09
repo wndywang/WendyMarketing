@@ -425,44 +425,80 @@ html, body { width:100%;height:100%;background:#000;color:var(--white);font-fami
   <!-- ════════════════════════════
        S5 — WHY COMMUNITY
        ════════════════════════════ -->
-  <div class="slide" id="s5" style="padding:60px 88px">
-    <div class="orb" style="width:600px;height:600px;background:radial-gradient(circle,#10B981,transparent 70%);bottom:-200px;left:-100px;opacity:0.13;animation:f1 14s ease-in-out infinite;"></div>
-    <div class="orb" style="width:300px;height:300px;background:radial-gradient(circle,#8B5CF6,transparent 70%);top:-60px;right:120px;opacity:0.09;animation:f2 10s ease-in-out infinite;"></div>
+  <div class="slide no-pad" id="s5">
 
-    <div class="a tag">
-      <span data-en="WHAT WE LEARNED · WHAT TRUE COMMUNITY MEANS" data-zh="我们学到的 · 真正社区的含义">WHAT WE LEARNED · WHAT TRUE COMMUNITY MEANS</span>
+    <div style="display:grid;grid-template-columns:1fr 420px;height:100%">
+
+      <!-- LEFT: Insight text -->
+      <div style="padding:52px 52px 44px;display:flex;flex-direction:column;justify-content:center;position:relative">
+        <div class="orb" style="width:400px;height:400px;background:radial-gradient(circle,#10B981,transparent 70%);bottom:-120px;left:-80px;opacity:0.12;animation:f1 14s ease-in-out infinite;"></div>
+
+        <div class="a tag">
+          <span data-en="WHAT WE LEARNED · WHAT TRUE COMMUNITY MEANS" data-zh="我们学到的 · 真正社区的含义">WHAT WE LEARNED · WHAT TRUE COMMUNITY MEANS</span>
+        </div>
+
+        <div class="a" style="font-size:40px;font-weight:900;line-height:1;letter-spacing:-0.035em;margin-bottom:2px" data-en="Most Companies" data-zh="大多数公司">Most Companies</div>
+        <div class="a" style="font-size:40px;font-weight:900;line-height:1;letter-spacing:-0.035em;color:var(--dim);margin-bottom:2px" data-en="Build Audiences." data-zh="构建受众。">Build Audiences.</div>
+        <div class="a" style="font-size:40px;font-weight:900;line-height:1;letter-spacing:-0.035em;color:var(--green-light);margin-bottom:18px" data-en="We Build Movements." data-zh="我们构建运动。">We Build Movements.</div>
+
+        <div class="a" style="display:grid;grid-template-columns:1fr 1fr;gap:20px 32px;margin-bottom:18px">
+          <div>
+            <div style="font-size:11px;font-weight:800;color:var(--off);margin-bottom:5px" data-en="❌  Community is NOT" data-zh="❌  社区不是">❌  Community is NOT</div>
+            <div style="font-size:11px;color:var(--dim);line-height:1.65">
+              <span data-en="A Discord nobody opens.<br>A download number.<br>A group with zero replies.<br>An event people leave after food." data-zh="一个没人打开的Discord。<br>一个下载数字。<br>一个零回复的群。<br>一个人们吃完就走的活动。">A Discord nobody opens.<br>A download number.<br>A group with zero replies.<br>An event people leave after food.</span>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:800;color:var(--green-light);margin-bottom:5px" data-en="✅  TRUE community is" data-zh="✅  真正的社区是">✅  TRUE community is</div>
+            <div style="font-size:11px;color:var(--muted);line-height:1.65">
+              <span data-en="People who DM each other without you.<br>Events with a waitlist before launch.<br>Members who recruit their friends.<br>An identity people put in their bio." data-zh="人们在没有你的情况下互相私信。<br>活动还没公布就有候补名单。<br>成员主动拉朋友加入。<br>一个人们放在个人简介里的身份。">People who DM each other without you.<br>Events with a waitlist before launch.<br>Members who recruit their friends.<br>An identity people put in their bio.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="a" style="border-top:1px solid var(--border);padding-top:14px">
+          <div style="font-size:12px;font-weight:800;color:var(--off);margin-bottom:4px" data-en="The PRCA Insight" data-zh="PRCA洞察">The PRCA Insight</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.6;max-width:520px">
+            <span data-en="People didn't ask \"what does Marc.AI cost?\" — they asked \"how do I get involved?\" That's not a product question. That's a belonging question. When people belong, they buy. When they buy because they belong, they never leave." data-zh="人们没有问\"Marc.AI多少钱？\" — 他们问的是\"我怎么参与？\" 这不是产品问题。这是归属问题。当人们有归属感时，他们会购买。当他们因归属感而购买时，他们永远不会离开。">People didn't ask "what does Marc.AI cost?" — they asked "how do I get involved?" That's not a product question. That's a belonging question. When people belong, they buy. When they buy because they belong, they never leave.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Community vibe photo grid -->
+      <div style="border-left:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;height:100%">
+
+        <div style="overflow:hidden;position:relative;border-bottom:1px solid var(--border);border-right:1px solid var(--border)">
+          <img src="IMG_community_lounge.png?v=1" alt="Community gathering" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;filter:brightness(0.8)">
+          <div style="position:absolute;bottom:0;left:0;right:0;padding:8px 12px;background:linear-gradient(transparent,rgba(0,0,0,0.7))">
+            <div style="font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--green-light)" data-en="GATHER" data-zh="聚集">GATHER</div>
+          </div>
+        </div>
+
+        <div style="overflow:hidden;position:relative;border-bottom:1px solid var(--border)">
+          <img src="IMG_community_panel.png?v=1" alt="Intimate panel discussion" style="width:100%;height:100%;object-fit:cover;object-position:center 20%;display:block;filter:brightness(0.8)">
+          <div style="position:absolute;bottom:0;left:0;right:0;padding:8px 12px;background:linear-gradient(transparent,rgba(0,0,0,0.7))">
+            <div style="font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--amber-light)" data-en="SHARE" data-zh="分享">SHARE</div>
+          </div>
+        </div>
+
+        <div style="overflow:hidden;position:relative;border-right:1px solid var(--border)">
+          <img src="IMG_community_connect.png?v=1" alt="People connecting at meetup" style="width:100%;height:100%;object-fit:cover;object-position:center 30%;display:block;filter:brightness(0.8)">
+          <div style="position:absolute;bottom:0;left:0;right:0;padding:8px 12px;background:linear-gradient(transparent,rgba(0,0,0,0.7))">
+            <div style="font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--purple-light)" data-en="CONNECT" data-zh="连接">CONNECT</div>
+          </div>
+        </div>
+
+        <div style="overflow:hidden;position:relative">
+          <img src="IMG_community_build.png?v=1" alt="Building together" style="width:100%;height:100%;object-fit:cover;object-position:center 20%;display:block;filter:brightness(0.8)">
+          <div style="position:absolute;bottom:0;left:0;right:0;padding:8px 12px;background:linear-gradient(transparent,rgba(0,0,0,0.7))">
+            <div style="font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--orange-light)" data-en="BUILD" data-zh="构建">BUILD</div>
+          </div>
+        </div>
+
+      </div>
+
     </div>
 
-    <div class="a D4" style="margin-bottom:4px" data-en="Most Companies Build" data-zh="大多数公司构建">Most Companies Build</div>
-    <div class="a D4" style="margin-bottom:4px;color:var(--dim)" data-en="Audiences." data-zh="受众。">Audiences.</div>
-    <div class="a D4 c-green" data-en="We're Building a Movement." data-zh="我们在构建一场运动。">We're Building a Movement.</div>
-
-    <div class="divider a"></div>
-
-    <div class="a" style="display:grid;grid-template-columns:1fr 1fr;gap:28px 48px;width:100%;margin-top:4px">
-
-      <div>
-        <div style="font-size:13px;font-weight:800;color:var(--off);margin-bottom:6px" data-en="❌  What community is NOT" data-zh="❌  社区不是什么">❌  What community is NOT</div>
-        <div style="font-size:12px;color:var(--dim);line-height:1.7">
-          <span data-en="A Discord server nobody opens.<br>A download number on a dashboard.<br>A WeChat group with zero replies.<br>An event where people leave after the food." data-zh="一个没人打开的Discord服务器。<br>仪表盘上的下载数字。<br>一个零回复的微信群。<br>一个人们吃完就走的活动。">A Discord server nobody opens.<br>A download number on a dashboard.<br>A WeChat group with zero replies.<br>An event where people leave after the food.</span>
-        </div>
-      </div>
-
-      <div>
-        <div style="font-size:13px;font-weight:800;color:var(--green-light);margin-bottom:6px" data-en="✅  What TRUE community looks like" data-zh="✅  真正的社区是什么样">✅  What TRUE community looks like</div>
-        <div style="font-size:12px;color:var(--muted);line-height:1.7">
-          <span data-en="People who DM each other without you.<br>Events with a waitlist before you announce them.<br>Members who recruit their friends unprompted.<br>A group identity people put in their bio." data-zh="人们在没有你的情况下互相私信。<br>活动还没公布就有候补名单。<br>成员主动拉朋友加入。<br>一个人们放在个人简介里的群体身份。">People who DM each other without you.<br>Events with a waitlist before you announce them.<br>Members who recruit their friends unprompted.<br>A group identity people put in their bio.</span>
-        </div>
-      </div>
-
-      <div style="grid-column:1/-1;border-top:1px solid var(--border);padding-top:18px">
-        <div style="font-size:14px;font-weight:800;color:var(--off);margin-bottom:6px" data-en="The Insight That Changed Everything" data-zh="改变一切的洞察">The Insight That Changed Everything</div>
-        <div style="font-size:14px;color:var(--muted);line-height:1.65;max-width:860px">
-          <span data-en="At PRCA, people didn't ask \"what does Marc.AI cost?\" — they asked \"how do I get involved?\" That's not a product question. That's a belonging question. The opportunity isn't selling software. It's giving people a place to matter. When they belong, they buy. When they buy because they belong, they never leave." data-zh="在PRCA，人们没有问\"Marc.AI多少钱？\" — 他们问的是\"我怎么参与？\"这不是产品问题。这是归属问题。机会不在于卖软件。而在于给人们一个有存在感的地方。当他们有归属感时，他们会购买。当他们因归属感而购买时，他们永远不会离开。">At PRCA, people didn't ask "what does Marc.AI cost?" — they asked "how do I get involved?" That's not a product question. That's a belonging question. The opportunity isn't selling software. It's giving people a place to matter. When they belong, they buy. When they buy because they belong, they never leave.</span>
-        </div>
-      </div>
-
-    </div>
   </div>
 
 
