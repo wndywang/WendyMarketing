@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<title>ChronoAI — Week 11 Monday Priority</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --green:        #10B981;
+  --green-light:  #34D399;
+  --blue:         #3B82F6;
+  --blue-light:   #93C5FD;
+  --amber:        #F59E0B;
+  --amber-light:  #FCD34D;
+  --red:          #EF4444;
+  --red-light:    #FCA5A5;
+  --orange:       #F97316;
+  --orange-light: #FB923C;
+  --purple:       #8B5CF6;
+  --purple-light: #C4B5FD;
+  --white:        #FFFFFF;
+  --off:          rgba(255,255,255,0.88);
+  --muted:        rgba(255,255,255,0.62);
+  --dim:          rgba(255,255,255,0.32);
+  --dimmer:       rgba(255,255,255,0.12);
+  --border:       rgba(255,255,255,0.07);
+  --surface:      rgba(255,255,255,0.04);
+  --surface2:     rgba(255,255,255,0.07);
+  --bg:           #050507;
+}
+
+html, body { width:100%;height:100%;background:#000;color:var(--white);font-family:'Inter',sans-serif;overflow:hidden;-webkit-font-smoothing:antialiased; }
+
+#outer { width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;background:#000; }
+#deck  { position:relative;width:1280px;height:800px;background:var(--bg);overflow:hidden;transform-origin:center center; }
+
+.slide {
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  justify-content:center;align-items:flex-start;
+  padding:72px 88px 72px;
+  opacity:0;pointer-events:none;
+  transition:opacity 0.6s cubic-bezier(.4,0,.2,1),transform 0.6s cubic-bezier(.4,0,.2,1);
+  transform:translateX(40px);
+}
+.slide.active  { opacity:1;pointer-events:all;transform:translateX(0); }
+.slide.prev    { opacity:0;transform:translateX(-40px); }
+.slide.center  { align-items:center;text-align:center; }
+.slide.no-pad  { padding:0; }
+
+.orb { position:absolute;border-radius:50%;pointer-events:none;filter:blur(120px); }
+@keyframes f1 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(22px,-18px) scale(1.04)} }
+@keyframes f2 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(-16px,20px) scale(1.05)} }
+@keyframes f3 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(14px,14px)} }
+
+#ui-top {
+  position:absolute;top:0;left:0;right:0;z-index:50;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:22px 32px;pointer-events:none;
+}
+.logo { font-size:11px;font-weight:700;letter-spacing:0.2em;color:var(--dim);text-transform:uppercase; }
+.lang-toggle { display:flex;background:var(--surface2);border:1px solid var(--border);border-radius:24px;overflow:hidden;pointer-events:all; }
+.lang-toggle button { padding:5px 14px;font-size:11px;font-weight:700;letter-spacing:0.06em;border:none;background:transparent;color:var(--muted);cursor:pointer;transition:all 0.2s;font-family:inherit; }
+.lang-toggle button.active { background:var(--white);color:#000;border-radius:22px;margin:1px; }
+
+#ui-bot {
+  position:absolute;bottom:0;left:0;right:0;z-index:50;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 32px;
+}
+#counter { font-size:11px;font-weight:500;color:var(--dim);letter-spacing:0.12em; }
+#dots    { display:flex;gap:7px;align-items:center; }
+.dot { width:5px;height:5px;border-radius:3px;background:var(--dimmer);cursor:pointer;transition:all 0.35s cubic-bezier(.4,0,.2,1); }
+.dot.active { width:22px;background:var(--white); }
+.nav-arrows { display:flex;gap:6px; }
+.nav-btn { width:34px;height:34px;border-radius:50%;border:1px solid var(--border);background:var(--surface);color:var(--off);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all 0.2s;font-family:inherit; }
+.nav-btn:hover { background:var(--surface2);border-color:var(--dim); }
+
+#progress { position:absolute;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--green),var(--purple));transition:width 0.55s cubic-bezier(.4,0,.2,1);z-index:100; }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+.a { opacity:0; }
+.slide.active .a { animation:fadeUp 0.5s ease both; }
+
+.tag { font-size:10px;font-weight:700;letter-spacing:0.22em;color:var(--muted);text-transform:uppercase;margin-bottom:20px; }
+.D  { font-size:100px;font-weight:900;line-height:0.95;letter-spacing:-0.045em; }
+.D2 { font-size:86px;font-weight:900;line-height:0.95;letter-spacing:-0.04em; }
+.D3 { font-size:72px;font-weight:900;line-height:0.95;letter-spacing:-0.04em; }
+.D4 { font-size:52px;font-weight:900;line-height:0.95;letter-spacing:-0.035em; }
+.outline { -webkit-text-stroke:1.5px rgba(255,255,255,0.2);color:transparent; }
+.c-green  { color:var(--green-light); }
+.c-blue   { color:var(--blue-light); }
+.c-amber  { color:var(--amber-light); }
+.c-purple { color:var(--purple-light); }
+.c-orange { color:var(--orange-light); }
+.divider  { width:32px;height:2px;background:var(--border);margin:22px 0; }
+
+.pill { display:inline-flex;align-items:center;gap:7px;padding:8px 15px;border-radius:100px;font-size:13px;font-weight:600;border:1px solid; }
+.pill-green  { background:rgba(16,185,129,0.1);border-color:rgba(16,185,129,0.28);color:var(--green-light); }
+.pill-purple { background:rgba(139,92,246,0.1);border-color:rgba(139,92,246,0.28);color:var(--purple-light); }
+.pill-orange { background:rgba(249,115,22,0.1);border-color:rgba(249,115,22,0.28);color:var(--orange-light); }
+.pill-blue   { background:rgba(59,130,246,0.1);border-color:rgba(59,130,246,0.28);color:var(--blue-light); }
+.pill-amber  { background:rgba(245,158,11,0.1);border-color:rgba(245,158,11,0.28);color:var(--amber-light); }
+
+.card { background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px; }
+.card-head { font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:10px; }
+
+.brow { display:flex;align-items:flex-start;gap:12px;border-bottom:1px solid var(--border); }
+.brow-icon { flex-shrink:0;font-size:16px;margin-top:1px; }
+</style>
+</head>
+<body>
+
+<div id="outer"><div id="deck">
+
+  <div id="progress" style="width:16.6%"></div>
+
+  <div id="ui-top">
+    <div style="display:flex;align-items:center;gap:14px">
+      <a href="https://wndywangaelf.github.io/WendyMarketing" style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:11px;font-weight:600;letter-spacing:0.06em;text-decoration:none;pointer-events:all;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.09)';this.style.color='rgba(255,255,255,0.85)'" onmouseout="this.style.background='var(--surface)';this.style.color='var(--muted)'">
+        <span style="font-size:13px">←</span> Overview
+      </a>
+      <div class="logo">ChronoAI</div>
+    </div>
+    <div class="lang-toggle">
+      <button id="btn-en" class="active" onclick="setLang('en')">EN</button>
+      <button id="btn-zh" onclick="setLang('zh')">中文</button>
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════
+       S1 — TITLE
+       ════════════════════════════ -->
+  <div class="slide center" id="s1">
+    <div class="orb" style="width:580px;height:580px;background:radial-gradient(circle,#10B981,transparent 70%);top:-180px;left:-80px;opacity:0.16;animation:f1 11s ease-in-out infinite;"></div>
+    <div class="orb" style="width:360px;height:360px;background:radial-gradient(circle,#8B5CF6,transparent 70%);bottom:-100px;right:80px;opacity:0.11;animation:f2 13s ease-in-out infinite;"></div>
+    <div class="orb" style="width:220px;height:220px;background:radial-gradient(circle,#F97316,transparent 70%);top:60px;right:180px;opacity:0.10;animation:f3 9s ease-in-out infinite;"></div>
+
+    <div class="a tag">
+      <span data-en="ChronoAI · Brand Director · Week 11 · Monday Priority · 9 March 2026" data-zh="ChronoAI · 品牌总监 · 第11周 · 周一重点 · 2026年3月9日">ChronoAI · Brand Director · Week 11 · Monday Priority · 9 March 2026</span>
+    </div>
+
+    <div class="a D2" data-en="Build The" data-zh="构建">Build The</div>
+    <div class="a D2 c-green" data-en="Community." data-zh="社区。">Community.</div>
+    <div class="a D2 outline" data-en="Own The Tribe." data-zh="拥有你的部落。">Own The Tribe.</div>
+
+    <div class="divider a" style="margin:22px auto"></div>
+
+    <div class="a" style="font-size:15px;color:var(--muted);font-style:italic;max-width:650px">
+      <span data-en="Not users. Not followers. Fans. People who show up, share, and build with us." data-zh="不是用户。不是粉丝。是狂热者。主动出现、分享并与我们共建的人。">Not users. Not followers. Fans. People who show up, share, and build with us.</span>
+    </div>
+
+    <div class="a" style="display:flex;gap:10px;margin-top:24px;flex-wrap:wrap;justify-content:center">
+      <div class="pill pill-green"><span>🌱</span><span data-en="Manifestation Collective" data-zh="心想事成社群">Manifestation Collective</span></div>
+      <div class="pill pill-orange"><span>💪</span><span data-en="Fitness / Wellness Tribe" data-zh="健康/健身部落">Fitness / Wellness Tribe</span></div>
+      <div class="pill pill-purple"><span>🧠</span><span data-en="AI Builders Club" data-zh="AI构建者俱乐部">AI Builders Club</span></div>
+    </div>
+
+    <div class="a" style="margin-top:16px;font-size:11px;color:var(--dim);letter-spacing:0.06em">
+      <span data-en="Week 11 · 9–13 March 2026 · CHO Audit Score: 9/10" data-zh="第11周 · 2026年3月9-13日 · CHO审计评分：9/10">Week 11 · 9–13 March 2026 · CHO Audit Score: 9/10</span>
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════
+       S2 — THE 6 GOALS
+       ════════════════════════════ -->
+  <div class="slide" id="s2">
+    <div class="orb" style="width:500px;height:500px;background:radial-gradient(circle,#10B981,transparent 70%);top:-180px;right:-120px;opacity:0.11;animation:f1 10s ease-in-out infinite;"></div>
+
+    <div class="a tag">
+      <span data-en="WEEK 11 · 6 GOALS · CHO AUDIT 9/10" data-zh="第11周 · 6个目标 · CHO审计 9/10">WEEK 11 · 6 GOALS · CHO AUDIT 9/10</span>
+    </div>
+
+    <div class="a D4" style="margin-bottom:6px" data-en="This Week's" data-zh="本周">This Week's</div>
+    <div class="a D4 c-green" style="margin-bottom:24px" data-en="Commitments." data-zh="承诺。">Commitments.</div>
+
+    <div class="a" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%">
+
+      <div class="card">
+        <div class="card-head" style="color:var(--green-light)">
+          <span data-en="① COMMUNITY IDENTITY + VALIDATION" data-zh="① 社区身份 + 验证">① COMMUNITY IDENTITY + VALIDATION</span>
+        </div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.6">
+          <span data-en="Define 3 community identities — post each manifesto in 2 real groups and collect 5+ organic responses from strangers by Wednesday." data-zh="定义3个社区身份 — 将每个宣言发布在2个真实群组中，周三前收集5+来自陌生人的自然回复。">Define 3 community identities — post each manifesto in 2 real groups and collect 5+ organic responses from strangers by Wednesday.</span>
+        </div>
+        <div style="margin-top:8px;font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--green)" data-en="PASS/FAIL: 5+ unsolicited responses" data-zh="通过/失败：5+自发回复">PASS/FAIL: 5+ unsolicited responses</div>
+      </div>
+
+      <div class="card">
+        <div class="card-head" style="color:var(--purple-light)">
+          <span data-en="② FLAGSHIP EVENT + WAITLIST" data-zh="② 旗舰活动 + 候补名单">② FLAGSHIP EVENT + WAITLIST</span>
+        </div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.6">
+          <span data-en="Design 1 event concept per vertical. Publish a live sign-up page for AI Builders event — share in 3 communities. Collect real interest." data-zh="为每个垂直领域设计1个活动概念。为AI构建者活动发布实时注册页面 — 在3个社区中分享。收集真实兴趣。">Design 1 event concept per vertical. Publish a live sign-up page for AI Builders event — share in 3 communities. Collect real interest.</span>
+        </div>
+        <div style="margin-top:8px;font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--purple)" data-en="PASS/FAIL: 15+ sign-ups in 48 hours" data-zh="通过/失败：48小时内15+注册">PASS/FAIL: 15+ sign-ups in 48 hours</div>
+      </div>
+
+      <div class="card">
+        <div class="card-head" style="color:var(--amber-light)">
+          <span data-en="③ FAN CEO COMMITMENT" data-zh="③ Fan CEO承诺">③ FAN CEO COMMITMENT</span>
+        </div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.6">
+          <span data-en="Monday meeting with Fan CEO. Secure a named commitment — co-host, speaker, venue, or network intro for the AI Builders event." data-zh="周一与Fan CEO会面。确保获得具名承诺 — AI构建者活动的联合主持、演讲者、场地或网络介绍。">Monday meeting with Fan CEO. Secure a named commitment — co-host, speaker, venue, or network intro for the AI Builders event.</span>
+        </div>
+        <div style="margin-top:8px;font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--amber)" data-en="PASS/FAIL: yes to a specific role" data-zh="通过/失败：对具体角色说是">PASS/FAIL: yes to a specific role</div>
+      </div>
+
+      <div class="card">
+        <div class="card-head" style="color:var(--orange-light)">
+          <span data-en="④ 3 PARTNERSHIP CONVERSATIONS" data-zh="④ 3个合作对话">④ 3 PARTNERSHIP CONVERSATIONS</span>
+        </div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.6">
+          <span data-en="Each team lead (Dione · Melissa · Nicholas) finds the #1 community in SG for their vertical and starts a partnership conversation with its organiser." data-zh="每位团队负责人（Dione · Melissa · Nicholas）找到新加坡对应垂直领域的排名第一社区，并与其组织者开始合作对话。">Each team lead (Dione · Melissa · Nicholas) finds the #1 community in SG for their vertical and starts a partnership conversation with its organiser.</span>
+        </div>
+        <div style="margin-top:8px;font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--orange)" data-en="PASS/FAIL: 3 real replies + next step" data-zh="通过/失败：3个真实回复+下一步">PASS/FAIL: 3 real replies + next step</div>
+      </div>
+
+      <div class="card">
+        <div class="card-head" style="color:var(--blue-light)">
+          <span data-en="⑤ SOULGARDEN AI OUTREACH → 10 DOWNLOADS" data-zh="⑤ SoulGarden AI外展 → 10次下载">⑤ SOULGARDEN AI OUTREACH → 10 DOWNLOADS</span>
+        </div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.6">
+          <span data-en="Deploy AI-automated outreach via 10 TikTok accounts to 200 manifestation creators. Build a reusable system — not manual DMs." data-zh="通过10个TikTok账号部署AI自动化外展，触达200位心想事成创作者。构建可复用系统 — 非手动私信。">Deploy AI-automated outreach via 10 TikTok accounts to 200 manifestation creators. Build a reusable system — not manual DMs.</span>
+        </div>
+        <div style="margin-top:8px;font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--blue)" data-en="PASS/FAIL: 10 verified downloads + system reusable" data-zh="通过/失败：10次已验证下载+系统可复用">PASS/FAIL: 10 verified downloads + system reusable</div>
+      </div>
+
+      <div class="card">
+        <div class="card-head" style="color:var(--red-light)">
+          <span data-en="⑥ DATA BASELINE + 3 OPTIMISATIONS" data-zh="⑥ 数据基线 + 3项优化">⑥ DATA BASELINE + 3 OPTIMISATIONS</span>
+        </div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.6">
+          <span data-en="Publish Week 11 marketing baseline (PR, Social, Community metrics) with 3 specific data-driven changes for Week 12 — stop, start, or scale." data-zh="发布第11周营销基线（PR、社交、社区指标），附3项Week 12具体数据驱动变更 — 停止、开始或扩大。">Publish Week 11 marketing baseline (PR, Social, Community metrics) with 3 specific data-driven changes for Week 12 — stop, start, or scale.</span>
+        </div>
+        <div style="margin-top:8px;font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--red)" data-en="PASS/FAIL: VP knows what changes + why" data-zh="通过/失败：VP知道改什么+为什么">PASS/FAIL: VP knows what changes + why</div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════
+       S3 — COMMUNITY VISION
+       ════════════════════════════ -->
+  <div class="slide no-pad" id="s3">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;height:100%">
+
+      <div style="padding:52px 42px;display:flex;flex-direction:column;justify-content:center;border-right:1px solid var(--border);position:relative">
+        <div class="orb" style="width:300px;height:300px;background:radial-gradient(circle,#10B981,transparent 70%);top:-80px;left:-60px;opacity:0.12;animation:f1 11s ease-in-out infinite;"></div>
+        <div class="a tag c-green" data-en="MANIFESTATION COLLECTIVE" data-zh="心想事成社群">MANIFESTATION COLLECTIVE</div>
+        <div class="a" style="font-size:36px;font-weight:900;line-height:1.05;margin-bottom:4px">🌱</div>
+        <div class="a" style="font-size:24px;font-weight:900;line-height:1.1;margin-bottom:14px" data-en="The Inner<br>Circle." data-zh="内圈。">The Inner<br>Circle.</div>
+        <div class="a" style="font-size:12px;color:var(--muted);line-height:1.65;margin-bottom:14px">
+          <span data-en="For seekers who want clarity, not noise. Daily rituals. Shared growth. SoulGarden as the gathering point." data-zh="为寻求清晰而非噪音的求索者。日常仪式。共同成长。SoulGarden作为聚集点。">For seekers who want clarity, not noise. Daily rituals. Shared growth. SoulGarden as the gathering point.</span>
+        </div>
+        <div class="a" style="font-size:11px;font-weight:700;color:var(--green-light)">
+          <span data-en="Lead: Dione" data-zh="负责人：Dione">Lead: Dione</span>
+        </div>
+      </div>
+
+      <div style="padding:52px 42px;display:flex;flex-direction:column;justify-content:center;border-right:1px solid var(--border);position:relative">
+        <div class="orb" style="width:300px;height:300px;background:radial-gradient(circle,#F97316,transparent 70%);bottom:-80px;right:-60px;opacity:0.1;animation:f2 13s ease-in-out infinite;"></div>
+        <div class="a tag c-orange" data-en="FITNESS / WELLNESS TRIBE" data-zh="健康/健身部落">FITNESS / WELLNESS TRIBE</div>
+        <div class="a" style="font-size:36px;font-weight:900;line-height:1.05;margin-bottom:4px">💪</div>
+        <div class="a" style="font-size:24px;font-weight:900;line-height:1.1;margin-bottom:14px" data-en="The Daily<br>Grind." data-zh="日常<br>磨练。">The Daily<br>Grind.</div>
+        <div class="a" style="font-size:12px;color:var(--muted);line-height:1.65;margin-bottom:14px">
+          <span data-en="Discipline meets community. Accountability partners. RiteSet as the ritual tracker that makes habits stick." data-zh="纪律遇见社区。问责伙伴。RiteSet作为让习惯坚持下去的仪式追踪器。">Discipline meets community. Accountability partners. RiteSet as the ritual tracker that makes habits stick.</span>
+        </div>
+        <div class="a" style="font-size:11px;font-weight:700;color:var(--orange-light)">
+          <span data-en="Lead: Melissa" data-zh="负责人：Melissa">Lead: Melissa</span>
+        </div>
+      </div>
+
+      <div style="padding:52px 42px;display:flex;flex-direction:column;justify-content:center;position:relative">
+        <div class="orb" style="width:300px;height:300px;background:radial-gradient(circle,#8B5CF6,transparent 70%);top:-80px;right:-60px;opacity:0.1;animation:f3 9s ease-in-out infinite;"></div>
+        <div class="a tag c-purple" data-en="AI BUILDERS CLUB" data-zh="AI构建者俱乐部">AI BUILDERS CLUB</div>
+        <div class="a" style="font-size:36px;font-weight:900;line-height:1.05;margin-bottom:4px">🧠</div>
+        <div class="a" style="font-size:24px;font-weight:900;line-height:1.1;margin-bottom:14px" data-en="The Vibe-<br>Coders." data-zh="Vibe-<br>Coders。">The Vibe-<br>Coders.</div>
+        <div class="a" style="font-size:12px;color:var(--muted);line-height:1.65;margin-bottom:14px">
+          <span data-en="Builders, not talkers. Hackathon as the flagship event. ChronoAI as the hub that connects Singapore's AI community." data-zh="构建者，非空谈者。黑客松作为旗舰活动。ChronoAI作为连接新加坡AI社区的枢纽。">Builders, not talkers. Hackathon as the flagship event. ChronoAI as the hub that connects Singapore's AI community.</span>
+        </div>
+        <div class="a" style="font-size:11px;font-weight:700;color:var(--purple-light)">
+          <span data-en="Lead: Nicholas" data-zh="负责人：Nicholas">Lead: Nicholas</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════
+       S4 — WEEKLY TIMELINE
+       ════════════════════════════ -->
+  <div class="slide" id="s4">
+    <div class="orb" style="width:500px;height:500px;background:radial-gradient(circle,#3B82F6,transparent 70%);bottom:-180px;left:-120px;opacity:0.1;animation:f2 12s ease-in-out infinite;"></div>
+
+    <div class="a tag">
+      <span data-en="WEEK 11 · EXECUTION TIMELINE · 9–13 MARCH 2026" data-zh="第11周 · 执行时间线 · 2026年3月9-13日">WEEK 11 · EXECUTION TIMELINE · 9–13 MARCH 2026</span>
+    </div>
+
+    <div class="a D4" style="margin-bottom:20px" data-en="The Clock." data-zh="倒计时。">The Clock.</div>
+
+    <div class="a" style="display:flex;flex-direction:column;gap:0;width:100%">
+
+      <div style="display:grid;grid-template-columns:120px 1fr;border-bottom:1px solid var(--border);padding:14px 0;align-items:center">
+        <div style="font-size:13px;font-weight:800;color:var(--amber-light)" data-en="MON 9" data-zh="周一 9日">MON 9</div>
+        <div style="font-size:13px;color:var(--off)">
+          <span data-en="Fan CEO meeting → secure commitment  ·  Community identity drafts started  ·  Team WhatsApp groups created" data-zh="Fan CEO会面 → 确保承诺 · 社区身份草案开始 · 团队WhatsApp群已创建">Fan CEO meeting → secure commitment  ·  Community identity drafts started  ·  Team WhatsApp groups created</span>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:120px 1fr;border-bottom:1px solid var(--border);padding:14px 0;align-items:center">
+        <div style="font-size:13px;font-weight:800;color:var(--amber-light)" data-en="TUE 10" data-zh="周二 10日">TUE 10</div>
+        <div style="font-size:13px;color:var(--off)">
+          <span data-en="Marc.AI follow-up emails to 10 PRCA contacts  ·  AI outreach system build begins  ·  Community manifestos drafted" data-zh="Marc.AI跟进邮件发送给10位PRCA联系人 · AI外展系统开始构建 · 社区宣言起草">Marc.AI follow-up emails to 10 PRCA contacts  ·  AI outreach system build begins  ·  Community manifestos drafted</span>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:120px 1fr;border-bottom:1px solid var(--border);padding:14px 0;align-items:center">
+        <div style="font-size:13px;font-weight:800;color:var(--green-light)" data-en="WED 11" data-zh="周三 11日">WED 11</div>
+        <div style="font-size:13px;color:var(--off)">
+          <span data-en="⬤ Community identities posted in 6 real groups → start counting responses  ·  Event sign-up page LIVE  ·  100 DMs sent checkpoint" data-zh="⬤ 社区身份发布到6个真实群组 → 开始计数回复 · 活动注册页面上线 · 100条私信发送检查点">⬤ Community identities posted in 6 real groups → start counting responses  ·  Event sign-up page LIVE  ·  100 DMs sent checkpoint</span>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:120px 1fr;border-bottom:1px solid var(--border);padding:14px 0;align-items:center">
+        <div style="font-size:13px;font-weight:800;color:var(--purple-light)" data-en="THU 12" data-zh="周四 12日">THU 12</div>
+        <div style="font-size:13px;color:var(--off)">
+          <span data-en="Fan CEO brief + commitment shared to VP  ·  3 event concepts presented to VP  ·  Nicholas confirms 2 AI leader meetings" data-zh="Fan CEO简报 + 承诺发给VP · 3个活动概念呈报VP · Nicholas确认2位AI领袖会议">Fan CEO brief + commitment shared to VP  ·  3 event concepts presented to VP  ·  Nicholas confirms 2 AI leader meetings</span>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:120px 1fr;padding:14px 0;align-items:center">
+        <div style="font-size:13px;font-weight:800;color:var(--red-light)" data-en="FRI 13" data-zh="周五 13日">FRI 13</div>
+        <div style="font-size:13px;color:var(--off)">
+          <span data-en="⬤ All 6 goals verified  ·  3 partnership conversations logged  ·  10+ downloads confirmed  ·  Data baseline + 3 optimisations to VP" data-zh="⬤ 所有6个目标已验证 · 3个合作对话已记录 · 10+下载已确认 · 数据基线 + 3项优化提交给VP">⬤ All 6 goals verified  ·  3 partnership conversations logged  ·  10+ downloads confirmed  ·  Data baseline + 3 optimisations to VP</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════
+       S5 — WHY COMMUNITY
+       ════════════════════════════ -->
+  <div class="slide center" id="s5">
+    <div class="orb" style="width:600px;height:600px;background:radial-gradient(circle,#10B981,transparent 70%);bottom:-200px;left:-100px;opacity:0.13;animation:f1 14s ease-in-out infinite;"></div>
+    <div class="orb" style="width:300px;height:300px;background:radial-gradient(circle,#8B5CF6,transparent 70%);top:-60px;right:120px;opacity:0.09;animation:f2 10s ease-in-out infinite;"></div>
+
+    <div class="a tag">
+      <span data-en="A DEEPER TRUTH" data-zh="更深层的真相">A DEEPER TRUTH</span>
+    </div>
+
+    <div class="a D3" data-en="People Yearn for" data-zh="人们渴望">People Yearn for</div>
+    <div class="a D3 c-green" data-en="Community." data-zh="社区。">Community.</div>
+
+    <div class="divider a" style="margin:28px auto"></div>
+
+    <div class="a" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;width:100%;max-width:900px">
+
+      <div class="card" style="text-align:left">
+        <div style="font-size:14px;font-weight:800;margin-bottom:6px;color:var(--green-light)" data-en="Tech Should Connect" data-zh="科技应该连接">Tech Should Connect</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.55" data-en="Technology should bring people together. Community is not a feature — it's the foundation." data-zh="科技应该让人们走到一起。社区不是功能 — 它是根基。">Technology should bring people together. Community is not a feature — it's the foundation.</div>
+      </div>
+
+      <div class="card" style="text-align:left">
+        <div style="font-size:14px;font-weight:800;margin-bottom:6px;color:var(--off)" data-en="People Want Belonging" data-zh="人们想要归属感">People Want Belonging</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.55" data-en="PRCA proved it — interest wasn't about buying a product. People want to belong to something." data-zh="PRCA证明了这一点 — 兴趣不在于购买产品。人们想要归属于某件事。">PRCA proved it — interest wasn't about buying a product. People want to belong to something.</div>
+      </div>
+
+      <div class="card" style="text-align:left">
+        <div style="font-size:14px;font-weight:800;margin-bottom:6px;color:var(--off)" data-en="AI Community Is Still Early" data-zh="AI社区仍在早期">AI Community Is Still Early</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.55" data-en="Everyone's building with AI, few are building around it. There's a massive gap for genuine, human-first communities." data-zh="每个人都在用AI构建，很少有人围绕AI构建。真正的、以人为本的社区存在巨大空白。">Everyone's building with AI, few are building around it. There's a massive gap for genuine, human-first communities.</div>
+      </div>
+
+      <div class="card" style="text-align:left">
+        <div style="font-size:14px;font-weight:800;margin-bottom:6px;color:var(--green-light)" data-en="ChronoAI as the Hub" data-zh="ChronoAI作为枢纽">ChronoAI as the Hub</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.55" data-en="We build the products. We host the events. We grow the tribe — community becomes our moat." data-zh="我们构建产品。我们举办活动。我们壮大部落 — 社区成为我们的护城河。">We build the products. We host the events. We grow the tribe — community becomes our moat.</div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════
+       S6 — CLOSING
+       ════════════════════════════ -->
+  <div class="slide center" id="s6">
+    <div class="orb" style="width:600px;height:600px;background:radial-gradient(circle,#7C3AED,transparent 70%);bottom:-200px;left:-100px;opacity:0.13;animation:f1 14s ease-in-out infinite;"></div>
+    <div class="orb" style="width:300px;height:300px;background:radial-gradient(circle,#10B981,transparent 70%);top:-60px;right:120px;opacity:0.09;animation:f2 10s ease-in-out infinite;"></div>
+
+    <div class="a tag">
+      <span data-en="WEEK 11 · 9–13 MARCH 2026 · BRAND DIRECTOR" data-zh="第11周 · 2026年3月9-13日 · 品牌总监">WEEK 11 · 9–13 MARCH 2026 · BRAND DIRECTOR</span>
+    </div>
+
+    <div class="a D3" data-en="Don't Market" data-zh="不要营销">Don't Market</div>
+    <div class="a D3 c-green" data-en="TO Them." data-zh="给他们。">TO Them.</div>
+    <div class="a D3 outline" data-en="Become One" data-zh="成为">Become One</div>
+    <div class="a D3" data-en="Of Them." data-zh="他们中的一员。">Of Them.</div>
+
+    <div class="divider a" style="margin:22px auto"></div>
+
+    <div class="a" style="font-size:15px;color:var(--muted);font-style:italic;max-width:560px">
+      <span data-en="6 goals. 3 communities. 1 principle: if the community wouldn't exist without us, we haven't built one." data-zh="6个目标。3个社区。1个原则：如果没有我们社区就不会存在，那我们就没有建成。">6 goals. 3 communities. 1 principle: if the community wouldn't exist without us, we haven't built one.</span>
+    </div>
+
+    <div class="a" style="margin-top:24px;padding:14px 22px;border-radius:14px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.22);display:inline-flex;align-items:center;gap:10px">
+      <span style="font-size:22px;font-weight:900;color:var(--green-light)">9/10</span>
+      <span style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:var(--dim);text-transform:uppercase" data-en="CHO Weekly Goal Audit" data-zh="CHO周目标审计">CHO Weekly Goal Audit</span>
+    </div>
+  </div>
+
+
+  <!-- ════ NAV ════ -->
+  <div id="ui-bot">
+    <div id="counter">01 / 06</div>
+    <div id="dots"></div>
+    <div class="nav-arrows">
+      <button class="nav-btn" onclick="prevSlide()">‹</button>
+      <button class="nav-btn" onclick="nextSlide()">›</button>
+    </div>
+  </div>
+
+</div></div>
+
+<script>
+let cur = 0, lang = 'en';
+const slides = Array.from(document.querySelectorAll('.slide'));
+const N = slides.length;
+
+const dotsEl = document.getElementById('dots');
+slides.forEach((_,i) => {
+  const d = document.createElement('div');
+  d.className = 'dot' + (i===0?' active':'');
+  d.onclick = () => goTo(i);
+  dotsEl.appendChild(d);
+});
+
+function goTo(n) {
+  if (n === cur) return;
+  slides[cur].classList.remove('active');
+  slides[cur].classList.add('prev');
+  const old = cur;
+  setTimeout(() => slides[old].classList.remove('prev'), 650);
+  cur = ((n%N)+N)%N;
+  slides[cur].classList.add('active');
+  triggerAnims(slides[cur]);
+  updateUI();
+}
+function nextSlide() { goTo(cur+1); }
+function prevSlide() { goTo(cur-1); }
+
+function triggerAnims(slide) {
+  const items = slide.querySelectorAll('.a');
+  items.forEach((el,i) => {
+    el.style.animation = 'none';
+    void el.offsetWidth;
+    el.style.animation = `fadeUp 0.5s ease ${0.04+i*0.07}s both`;
+  });
+}
+
+function updateUI() {
+  document.getElementById('counter').textContent = String(cur+1).padStart(2,'0') + ' / ' + String(N).padStart(2,'0');
+  document.querySelectorAll('.dot').forEach((d,i) => d.classList.toggle('active', i===cur));
+  document.getElementById('progress').style.width = ((cur+1)/N*100) + '%';
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+  if (e.key === 'ArrowLeft')  prevSlide();
+});
+
+let tx = 0;
+document.getElementById('deck').addEventListener('touchstart', e => { tx = e.changedTouches[0].clientX; });
+document.getElementById('deck').addEventListener('touchend',   e => { const d = e.changedTouches[0].clientX - tx; if(Math.abs(d)>50){ d<0?nextSlide():prevSlide(); } });
+
+function setLang(l) {
+  lang = l;
+  document.getElementById('btn-en').classList.toggle('active', l==='en');
+  document.getElementById('btn-zh').classList.toggle('active', l==='zh');
+  document.querySelectorAll('[data-en]').forEach(el => {
+    el.innerHTML = el.getAttribute('data-' + l) || el.getAttribute('data-en');
+  });
+}
+
+(function scaleToFit() {
+  const d = document.getElementById('deck');
+  const s = Math.min(window.innerWidth / 1280, window.innerHeight / 800);
+  d.style.transform = 'scale(' + s + ')';
+  window.addEventListener('resize', () => {
+    const s2 = Math.min(window.innerWidth / 1280, window.innerHeight / 800);
+    d.style.transform = 'scale(' + s2 + ')';
+  });
+})();
+
+slides[0].classList.add('active');
+triggerAnims(slides[0]);
+</script>
+</body>
+</html>
