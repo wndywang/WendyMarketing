@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<title>ChronoAI — Week 11 Friday Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --green:        #10B981;
+  --green-light:  #34D399;
+  --blue:         #3B82F6;
+  --blue-light:   #93C5FD;
+  --amber:        #F59E0B;
+  --amber-light:  #FCD34D;
+  --red:          #EF4444;
+  --red-light:    #FCA5A5;
+  --orange:       #F97316;
+  --orange-light: #FB923C;
+  --purple:       #8B5CF6;
+  --purple-light: #C4B5FD;
+  --white:        #FFFFFF;
+  --off:          rgba(255,255,255,0.88);
+  --muted:        rgba(255,255,255,0.62);
+  --dim:          rgba(255,255,255,0.32);
+  --dimmer:       rgba(255,255,255,0.12);
+  --border:       rgba(255,255,255,0.07);
+  --surface:      rgba(255,255,255,0.04);
+  --surface2:     rgba(255,255,255,0.07);
+  --bg:           #050507;
+}
+
+html, body { width:100%;height:100%;background:#000;color:var(--white);font-family:'Inter',sans-serif;overflow:hidden;-webkit-font-smoothing:antialiased; }
+
+#outer { width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;background:#000; }
+#deck  { position:relative;width:1280px;height:800px;background:var(--bg);overflow:hidden;transform-origin:center center; }
+
+.slide {
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  justify-content:center;align-items:flex-start;
+  padding:72px 88px 72px;
+  opacity:0;pointer-events:none;
+  transition:opacity 0.6s cubic-bezier(.4,0,.2,1),transform 0.6s cubic-bezier(.4,0,.2,1);
+  transform:translateX(40px);
+}
+.slide.active  { opacity:1;pointer-events:all;transform:translateX(0); }
+.slide.prev    { opacity:0;transform:translateX(-40px); }
+.slide.center  { align-items:center;text-align:center; }
+.slide.no-pad  { padding:0; }
+
+.orb { position:absolute;border-radius:50%;pointer-events:none;filter:blur(120px); }
+@keyframes f1 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(22px,-18px) scale(1.04)} }
+@keyframes f2 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(-16px,20px) scale(1.05)} }
+@keyframes f3 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(14px,14px)} }
+
+#ui-top { position:absolute;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:22px 32px;pointer-events:none; }
+.logo { font-size:11px;font-weight:700;letter-spacing:0.2em;color:var(--dim);text-transform:uppercase; }
+.lang-toggle { display:flex;background:var(--surface2);border:1px solid var(--border);border-radius:24px;overflow:hidden;pointer-events:all; }
+.lang-toggle button { padding:5px 14px;font-size:11px;font-weight:700;letter-spacing:0.06em;border:none;background:transparent;color:var(--muted);cursor:pointer;transition:all 0.2s;font-family:inherit; }
+.lang-toggle button.active { background:var(--white);color:#000;border-radius:22px;margin:1px; }
+
+#ui-bot { position:absolute;bottom:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:20px 32px; }
+#counter { font-size:11px;font-weight:500;color:var(--dim);letter-spacing:0.12em; }
+#dots    { display:flex;gap:7px;align-items:center; }
+.dot { width:5px;height:5px;border-radius:3px;background:var(--dimmer);cursor:pointer;transition:all 0.35s cubic-bezier(.4,0,.2,1); }
+.dot.active { width:22px;background:var(--white); }
+.nav-arrows { display:flex;gap:6px; }
+.nav-btn { width:34px;height:34px;border-radius:50%;border:1px solid var(--border);background:var(--surface);color:var(--off);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all 0.2s;font-family:inherit; }
+.nav-btn:hover { background:var(--surface2);border-color:var(--dim); }
+
+#progress { position:absolute;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--green),var(--blue));transition:width 0.55s cubic-bezier(.4,0,.2,1);z-index:100; }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.7)} }
+.a { opacity:0; }
+.slide.active .a { animation:fadeUp 0.5s ease both; }
+
+.tag  { font-size:10px;font-weight:700;letter-spacing:0.22em;color:var(--muted);text-transform:uppercase;margin-bottom:18px; }
+.D   { font-size:100px;font-weight:900;line-height:0.92;letter-spacing:-0.045em; }
+.D2  { font-size:82px; font-weight:900;line-height:0.92;letter-spacing:-0.04em; }
+.D3  { font-size:64px; font-weight:900;line-height:0.92;letter-spacing:-0.04em; }
+.D4  { font-size:44px; font-weight:900;line-height:0.95;letter-spacing:-0.03em; }
+.D5  { font-size:32px; font-weight:900;line-height:1;   letter-spacing:-0.02em; }
+.outline { -webkit-text-stroke:1.5px rgba(255,255,255,0.2);color:transparent; }
+.c-green  { color:var(--green-light); }
+.c-blue   { color:var(--blue-light); }
+.c-amber  { color:var(--amber-light); }
+.c-purple { color:var(--purple-light); }
+.c-red    { color:var(--red-light); }
+.c-orange { color:var(--orange-light); }
+.divider  { width:32px;height:2px;background:var(--border);margin:16px 0; }
+
+.pill { display:inline-flex;align-items:center;gap:7px;padding:7px 14px;border-radius:100px;font-size:12px;font-weight:600;border:1px solid; }
+.pill-green  { background:rgba(16,185,129,0.1); border-color:rgba(16,185,129,0.28); color:var(--green-light); }
+.pill-blue   { background:rgba(59,130,246,0.1);  border-color:rgba(59,130,246,0.28); color:var(--blue-light); }
+.pill-amber  { background:rgba(245,158,11,0.1);  border-color:rgba(245,158,11,0.28); color:var(--amber-light); }
+.pill-red    { background:rgba(239,68,68,0.1);   border-color:rgba(239,68,68,0.28);  color:var(--red-light); }
+.pill-orange { background:rgba(249,115,22,0.1);  border-color:rgba(249,115,22,0.28); color:var(--orange-light); }
+.pill-purple { background:rgba(139,92,246,0.1);  border-color:rgba(139,92,246,0.28); color:var(--purple-light); }
+
+.pb-wrap { width:100%;background:var(--surface2);border-radius:100px;height:6px;overflow:hidden; }
+.pb-fill  { height:100%;border-radius:100px; }
+
+.chk-done    { width:18px;height:18px;border-radius:4px;background:rgba(16,185,129,0.2); border:1.5px solid rgba(16,185,129,0.5);  flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--green-light); }
+.chk-partial { width:18px;height:18px;border-radius:4px;background:rgba(245,158,11,0.15);border:1.5px solid rgba(245,158,11,0.4);  flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--amber-light); }
+.chk-miss    { width:18px;height:18px;border-radius:4px;background:rgba(239,68,68,0.1);  border:1.5px solid rgba(239,68,68,0.35);  flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--red-light); }
+
+.checklist { list-style:none;display:flex;flex-direction:column;gap:8px; }
+.checklist li { display:flex;align-items:flex-start;gap:9px;font-size:12px;color:var(--off);line-height:1.4; }
+.cl-head { font-size:10px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;margin-bottom:10px; }
+
+.card { padding:16px;border-radius:12px;border:1px solid; }
+.card-head { font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:8px; }
+</style>
+</head>
+<body>
+<div id="outer"><div id="deck">
+
+  <div id="progress" style="width:14.2%"></div>
+
+  <div id="ui-top">
+    <div style="display:flex;align-items:center;gap:14px">
+      <a href="https://wndywangaelf.github.io/WendyMarketing" style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:11px;font-weight:600;letter-spacing:0.06em;text-decoration:none;pointer-events:all;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.09)';this.style.color='rgba(255,255,255,0.85)'" onmouseout="this.style.background='var(--surface)';this.style.color='var(--muted)'">
+        <span style="font-size:13px">←</span> Overview
+      </a>
+      <div class="logo">ChronoAI</div>
+    </div>
+    <div class="lang-toggle">
+      <button id="btn-en" class="active" onclick="setLang('en')">EN</button>
+      <button id="btn-zh" onclick="setLang('zh')">中文</button>
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════
+       S1 — TITLE
+       ════════════════════════════ -->
+  <div class="slide center" id="s1">
+    <div class="orb" style="width:580px;height:580px;background:radial-gradient(circle,#3B82F6,transparent 70%);top:-180px;left:-80px;opacity:0.14;animation:f1 11s ease-in-out infinite;"></div>
+    <div class="orb" style="width:360px;height:360px;background:radial-gradient(circle,#10B981,transparent 70%);bottom:-100px;right:80px;opacity:0.10;animation:f2 13s ease-in-out infinite;"></div>
+
+    <div class="a tag">
+      <span data-en="ChronoAI · Brand Director · Week 11 · Friday Review · 13 March 2026" data-zh="ChronoAI · 品牌总监 · 第11周 · 周五复盘 · 2026年3月13日">ChronoAI · Brand Director · Week 11 · Friday Review · 13 March 2026</span>
+    </div>
+
+    <div class="a D2" data-en="4 Products." data-zh="4款产品。">4 Products.</div>
+    <div class="a D2 c-green" data-en="Real Numbers." data-zh="真实数据。">Real Numbers.</div>
+    <div class="a D2 outline" data-en="No Illusions." data-zh="不自欺。">No Illusions.</div>
+
+    <div class="divider a" style="margin:22px auto"></div>
+
+    <div class="a" style="font-size:15px;color:var(--muted);max-width:660px;line-height:1.65">
+      <span data-en="Week 11 review — starting with where every product stands right now. Numbers first. Then what we did, what we learned, and what changes next week." data-zh="第11周复盘 — 先看每个产品当前的真实状态。数据先行。然后是我们做了什么、学到了什么、下周怎么调整。">Week 11 review — starting with where every product stands right now. Numbers first. Then what we did, what we learned, and what changes next week.</span>
+    </div>
+
+    <div class="a" style="display:flex;gap:10px;margin-top:24px;flex-wrap:wrap;justify-content:center">
+      <div class="pill pill-purple"><span>🔮</span><span>GodGPT</span></div>
+      <div class="pill pill-green"><span>🌱</span><span>SoulGarden</span></div>
+      <div class="pill pill-orange"><span>⚡</span><span>RiteSet</span></div>
+      <div class="pill pill-blue"><span>🧠</span><span>Marc.AI</span></div>
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════
+       S2 — PRODUCT DASHBOARD
+       ════════════════════════════ -->
+  <div class="slide no-pad" id="s2">
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;height:100%">
+
+      <!-- GODGPT -->
+      <div style="padding:36px 36px 28px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);position:relative;display:flex;flex-direction:column">
+        <div class="orb" style="width:250px;height:250px;background:radial-gradient(circle,#8B5CF6,transparent 70%);top:-60px;left:-40px;opacity:0.1;animation:f1 10s ease-in-out infinite;"></div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div>
+            <div class="a" style="font-size:10px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--purple-light);margin-bottom:3px">🔮 GODGPT</div>
+            <div class="a" style="font-size:9px;color:var(--dim);letter-spacing:0.06em" data-en="Spiritual wellness app · Live on App Store" data-zh="灵性健康应用 · 已上线App Store">Spiritual wellness app · Live on App Store</div>
+          </div>
+          <div class="a" style="padding:4px 12px;border-radius:20px;background:rgba(139,92,246,0.12);border:1px solid rgba(139,92,246,0.3);font-size:9px;font-weight:700;color:var(--purple-light);letter-spacing:0.08em" data-en="LIVE" data-zh="运营中">LIVE</div>
+        </div>
+
+        <div class="a" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">
+          <div style="padding:10px;border-radius:8px;background:var(--surface);border:1px solid var(--border);text-align:center">
+            <div style="font-size:24px;font-weight:900;color:var(--purple-light);line-height:1" data-en="—" data-zh="—">—</div>
+            <div style="font-size:9px;color:var(--dim);margin-top:3px" data-en="Total Downloads" data-zh="总下载量">Total Downloads</div>
+          </div>
+          <div style="padding:10px;border-radius:8px;background:var(--surface);border:1px solid var(--border);text-align:center">
+            <div style="font-size:24px;font-weight:900;color:var(--purple-light);line-height:1" data-en="—" data-zh="—">—</div>
+            <div style="font-size:9px;color:var(--dim);margin-top:3px" data-en="MAU" data-zh="月活">MAU</div>
+          </div>
+          <div style="padding:10px;border-radius:8px;background:var(--surface);border:1px solid var(--border);text-align:center">
+            <div style="font-size:24px;font-weight:900;color:var(--purple-light);line-height:1" data-en="—" data-zh="—">—</div>
+            <div style="font-size:9px;color:var(--dim);margin-top:3px" data-en="D7 Retention" data-zh="D7留存">D7 Retention</div>
+          </div>
+        </div>
+
+        <div class="a" style="font-size:11px;color:var(--muted);line-height:1.55;flex:1">
+          <span data-en="Owner: TBD · Status: Live, needs growth strategy alignment with new brand direction" data-zh="负责人：待定 · 状态：已上线，需结合新品牌方向制定增长策略">Owner: TBD · Status: Live, needs growth strategy alignment with new brand direction</span>
+        </div>
+      </div>
+
+      <!-- SOULGARDEN -->
+      <div style="padding:36px 36px 28px;border-bottom:1px solid var(--border);position:relative;display:flex;flex-direction:column">
+        <div class="orb" style="width:250px;height:250px;background:radial-gradient(circle,#10B981,transparent 70%);bottom:-60px;right:-40px;opacity:0.1;animation:f2 12s ease-in-out infinite;"></div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div>
+            <div class="a" style="font-size:10px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--green-light);margin-bottom:3px">🌱 SOULGARDEN</div>
+            <div class="a" style="font-size:9px;color:var(--dim);letter-spacing:0.06em" data-en="Manifestation app · Launched Week 09" data-zh="显化应用 · 第9周上线">Manifestation app · Launched Week 09</div>
+          </div>
+          <div class="a" style="padding:4px 12px;border-radius:20px;background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.3);font-size:9px;font-weight:700;color:var(--red-light);letter-spacing:0.08em" data-en="NEEDS GROWTH" data-zh="需增长">NEEDS GROWTH</div>
+        </div>
+
+        <div class="a" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">
+          <div style="padding:10px;border-radius:8px;background:rgba(239,68,68,0.05);border:1px solid rgba(239,68,68,0.15);text-align:center">
+            <div style="font-size:24px;font-weight:900;color:var(--red-light);line-height:1">29</div>
+            <div style="font-size:9px;color:var(--dim);margin-top:3px" data-en="Total Downloads" data-zh="总下载量">Total Downloads</div>
+          </div>
+          <div style="padding:10px;border-radius:8px;background:rgba(239,68,68,0.05);border:1px solid rgba(239,68,68,0.15);text-align:center">
+            <div style="font-size:24px;font-weight:900;color:var(--red-light);line-height:1">~12</div>
+            <div style="font-size:9px;color:var(--dim);margin-top:3px" data-en="External Users" data-zh="外部用户">External Users</div>
+          </div>
+          <div style="padding:10px;border-radius:8px;background:rgba(239,68,68,0.05);border:1px solid rgba(239,68,68,0.15);text-align:center">
+            <div style="font-size:24px;font-weight:900;color:var(--red-light);line-height:1" data-en="—" data-zh="—">—</div>
+            <div style="font-size:9px;color:var(--dim);margin-top:3px" data-en="D7 Retention" data-zh="D7留存">D7 Retention</div>
+          </div>
+        </div>
+
+        <div class="a" style="font-size:11px;color:var(--muted);line-height:1.55;flex:1">
+          <span data-en="Owner: Dione · Week 11 focus: Community-led acquisition via Manifestation community + AI influencer outreach" data-zh="负责人：Dione · 第11周重点：通过显化社区 + AI网红触达进行社区驱动获客">Owner: Dione · Week 11 focus: Community-led acquisition via Manifestation community + AI influencer outreach</span>
+        </div>
+      </div>
+
+      <!-- RITESET -->
+      <div style="padding:36px 36px 28px;border-right:1px solid var(--border);position:relative;display:flex;flex-direction:column">
+        <div class="orb" style="width:250px;height:250px;background:radial-gradient(circle,#F97316,transparent 70%);top:-60px;right:-40px;opacity:0.08;animation:f3 9s ease-in-out infinite;"></div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div>
+            <div class="a" style="font-size:10px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--orange-light);margin-bottom:3px">⚡ RITESET</div>
+            <div class="a" style="font-size:9px;color:var(--dim);letter-spacing:0.06em" data-en="Habit ritual tracker · Approved, preparing launch" data-zh="习惯仪式追踪器 · 已批准，准备发布">Habit ritual tracker · Approved, preparing launch</div>
+          </div>
+          <div class="a" style="padding:4px 12px;border-radius:20px;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3);font-size:9px;font-weight:700;color:var(--amber-light);letter-spacing:0.08em" data-en="LAUNCHING" data-zh="即将上线">LAUNCHING</div>
+        </div>
+
+        <div class="a" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">
+          <div style="padding:10px;border-radius:8px;background:rgba(245,158,11,0.05);border:1px solid rgba(245,158,11,0.15);text-align:center">
+            <div style="font-size:24px;font-weight:900;color:var(--amber-light);line-height:1" data-en="—" data-zh="—">—</div>
+            <div style="font-size:9px;color:var(--dim);margin-top:3px" data-en="Downloads" data-zh="下载量">Downloads</div>
+          </div>
+          <div style="padding:10px;border-radius:8px;background:rgba(245,158,11,0.05);border:1px solid rgba(245,158,11,0.15);text-align:center">
+            <div style="font-size:24px;font-weight:900;color:var(--amber-light);line-height:1" data-en="—" data-zh="—">—</div>
+            <div style="font-size:9px;color:var(--dim);margin-top:3px" data-en="App Store" data-zh="商店状态">App Store</div>
+          </div>
+          <div style="padding:10px;border-radius:8px;background:rgba(245,158,11,0.05);border:1px solid rgba(245,158,11,0.15);text-align:center">
+            <div style="font-size:24px;font-weight:900;color:var(--amber-light);line-height:1" data-en="—" data-zh="—">—</div>
+            <div style="font-size:9px;color:var(--dim);margin-top:3px" data-en="Gate 1 Status" data-zh="Gate 1 状态">Gate 1 Status</div>
+          </div>
+        </div>
+
+        <div class="a" style="font-size:11px;color:var(--muted);line-height:1.55;flex:1">
+          <span data-en="Owner: Melissa · Week 11 focus: App Store launch + Fitness/Wellness community activation" data-zh="负责人：Melissa · 第11周重点：上线App Store + 激活健身/健康社区">Owner: Melissa · Week 11 focus: App Store launch + Fitness/Wellness community activation</span>
+        </div>
+      </div>
+
+      <!-- MARC.AI -->
+      <div style="padding:36px 36px 28px;position:relative;display:flex;flex-direction:column">
+        <div class="orb" style="width:250px;height:250px;background:radial-gradient(circle,#3B82F6,transparent 70%);bottom:-60px;left:-40px;opacity:0.1;animation:f1 11s ease-in-out infinite;"></div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div>
+            <div class="a" style="font-size:10px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--blue-light);margin-bottom:3px">🧠 MARC.AI</div>
+            <div class="a" style="font-size:9px;color:var(--dim);letter-spacing:0.06em" data-en="B2B marketing SaaS · Building MVP" data-zh="B2B营销SaaS · 构建MVP中">B2B marketing SaaS · Building MVP</div>
+          </div>
+          <div class="a" style="padding:4px 12px;border-radius:20px;background:rgba(59,130,246,0.12);border:1px solid rgba(59,130,246,0.3);font-size:9px;font-weight:700;color:var(--blue-light);letter-spacing:0.08em" data-en="BUILDING" data-zh="开发中">BUILDING</div>
+        </div>
+
+        <div class="a" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">
+          <div style="padding:10px;border-radius:8px;background:rgba(59,130,246,0.05);border:1px solid rgba(59,130,246,0.15);text-align:center">
+            <div style="font-size:24px;font-weight:900;color:var(--blue-light);line-height:1">10</div>
+            <div style="font-size:9px;color:var(--dim);margin-top:3px" data-en="B2B Contacts" data-zh="B2B联系人">B2B Contacts</div>
+          </div>
+          <div style="padding:10px;border-radius:8px;background:rgba(16,185,129,0.05);border:1px solid rgba(16,185,129,0.15);text-align:center">
+            <div style="font-size:24px;font-weight:900;color:var(--green-light);line-height:1" data-en="YES" data-zh="是">YES</div>
+            <div style="font-size:9px;color:var(--dim);margin-top:3px" data-en="PMF Signal" data-zh="PMF信号">PMF Signal</div>
+          </div>
+          <div style="padding:10px;border-radius:8px;background:rgba(59,130,246,0.05);border:1px solid rgba(59,130,246,0.15);text-align:center">
+            <div style="font-size:24px;font-weight:900;color:var(--blue-light);line-height:1" data-en="—" data-zh="—">—</div>
+            <div style="font-size:9px;color:var(--dim);margin-top:3px" data-en="MVP Progress" data-zh="MVP进度">MVP Progress</div>
+          </div>
+        </div>
+
+        <div class="a" style="font-size:11px;color:var(--muted);line-height:1.55;flex:1">
+          <span data-en="Owner: Wendy · Week 11 focus: MVP build with Avatar team + follow-up 10 PRCA contacts + define pricing" data-zh="负责人：Wendy · 第11周重点：联合Avatar团队构建MVP + 跟进10位PRCA联系人 + 定义定价">Owner: Wendy · Week 11 focus: MVP build with Avatar team + follow-up 10 PRCA contacts + define pricing</span>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ════════════════════════════
+       S3 — TEAM OWNERSHIP MATRIX
+       ════════════════════════════ -->
+  <div class="slide" id="s3" style="padding-top:56px;padding-bottom:56px">
+    <div class="orb" style="width:500px;height:500px;background:radial-gradient(circle,#F97316,transparent 70%);bottom:-180px;right:-120px;opacity:0.09;animation:f2 12s ease-in-out infinite;"></div>
+
+    <div class="a tag">
+      <span data-en="TEAM OWNERSHIP · WHO OWNS WHAT · WEEK 11" data-zh="团队分工 · 各司其职 · 第11周">TEAM OWNERSHIP · WHO OWNS WHAT · WEEK 11</span>
+    </div>
+
+    <div class="a D4" style="margin-bottom:4px" data-en="Clear Lanes." data-zh="各就各位。">Clear Lanes.</div>
+    <div class="a D4 c-green" style="margin-bottom:22px" data-en="No Overlap." data-zh="绝不重叠。">No Overlap.</div>
+
+    <div class="a" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px;width:100%">
+
+      <!-- WENDY -->
+      <div style="background:rgba(59,130,246,0.05);border:1px solid rgba(59,130,246,0.2);border-radius:14px;padding:20px 16px;display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px">
+          <div style="width:36px;height:36px;border-radius:50%;background:rgba(59,130,246,0.15);border:1.5px solid rgba(59,130,246,0.4);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:var(--blue-light)">W</div>
+          <div>
+            <div style="font-size:13px;font-weight:800;color:var(--off)">Wendy</div>
+            <div style="font-size:9px;color:var(--dim);letter-spacing:0.06em" data-en="Brand Director" data-zh="品牌总监">Brand Director</div>
+          </div>
+        </div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--blue-light)" data-en="OWNS: MARC.AI + STRATEGY" data-zh="负责：MARC.AI + 战略">OWNS: MARC.AI + STRATEGY</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.5">
+          <span data-en="• Marc.AI MVP + pricing<br>• 10 B2B contact follow-ups<br>• Fan CEO partnership<br>• Weekly VP reporting<br>• Team direction + audit" data-zh="• Marc.AI MVP + 定价<br>• 10个B2B联系人跟进<br>• Fan CEO合作<br>• 每周VP汇报<br>• 团队方向 + 审计">• Marc.AI MVP + pricing<br>• 10 B2B contact follow-ups<br>• Fan CEO partnership<br>• Weekly VP reporting<br>• Team direction + audit</span>
+        </div>
+      </div>
+
+      <!-- DIONE -->
+      <div style="background:rgba(16,185,129,0.05);border:1px solid rgba(16,185,129,0.2);border-radius:14px;padding:20px 16px;display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px">
+          <div style="width:36px;height:36px;border-radius:50%;background:rgba(16,185,129,0.15);border:1.5px solid rgba(16,185,129,0.4);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:var(--green-light)">D</div>
+          <div>
+            <div style="font-size:13px;font-weight:800;color:var(--off)">Dione</div>
+            <div style="font-size:9px;color:var(--dim);letter-spacing:0.06em" data-en="Marketing" data-zh="营销">Marketing</div>
+          </div>
+        </div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--green-light)" data-en="OWNS: SOULGARDEN + GODGPT" data-zh="负责：SOULGARDEN + GODGPT">OWNS: SOULGARDEN + GODGPT</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.5">
+          <span data-en="• SoulGarden acquisition plan<br>• Manifestation community lead<br>• GodGPT content + growth<br>• AI influencer campaign<br>• Social media cadence" data-zh="• SoulGarden获客计划<br>• 显化社区负责人<br>• GodGPT内容 + 增长<br>• AI网红推广<br>• 社交媒体节奏">• SoulGarden acquisition plan<br>• Manifestation community lead<br>• GodGPT content + growth<br>• AI influencer campaign<br>• Social media cadence</span>
+        </div>
+      </div>
+
+      <!-- MELISSA -->
+      <div style="background:rgba(249,115,22,0.05);border:1px solid rgba(249,115,22,0.2);border-radius:14px;padding:20px 16px;display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px">
+          <div style="width:36px;height:36px;border-radius:50%;background:rgba(249,115,22,0.15);border:1.5px solid rgba(249,115,22,0.4);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:var(--orange-light)">M</div>
+          <div>
+            <div style="font-size:13px;font-weight:800;color:var(--off)">Melissa</div>
+            <div style="font-size:9px;color:var(--dim);letter-spacing:0.06em" data-en="Marketing" data-zh="营销">Marketing</div>
+          </div>
+        </div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--orange-light)" data-en="OWNS: RITESET + FITNESS" data-zh="负责：RITESET + 健身">OWNS: RITESET + FITNESS</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.5">
+          <span data-en="• RiteSet App Store launch<br>• Fitness/Wellness community lead<br>• Press release distribution<br>• User onboarding content<br>• App Store optimization" data-zh="• RiteSet上架App Store<br>• 健身/健康社区负责人<br>• 新闻稿分发<br>• 用户引导内容<br>• 应用商店优化">• RiteSet App Store launch<br>• Fitness/Wellness community lead<br>• Press release distribution<br>• User onboarding content<br>• App Store optimization</span>
+        </div>
+      </div>
+
+      <!-- NICHOLAS -->
+      <div style="background:rgba(139,92,246,0.05);border:1px solid rgba(139,92,246,0.2);border-radius:14px;padding:20px 16px;display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px">
+          <div style="width:36px;height:36px;border-radius:50%;background:rgba(139,92,246,0.15);border:1.5px solid rgba(139,92,246,0.4);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:var(--purple-light)">N</div>
+          <div>
+            <div style="font-size:13px;font-weight:800;color:var(--off)">Nicholas</div>
+            <div style="font-size:9px;color:var(--dim);letter-spacing:0.06em" data-en="Business Dev" data-zh="商务拓展">Business Dev</div>
+          </div>
+        </div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--purple-light)" data-en="OWNS: HACKATHON + AI COMMUNITY" data-zh="负责：黑客松 + AI社区">OWNS: HACKATHON + AI COMMUNITY</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.5">
+          <span data-en="• Hackathon planning + partners<br>• Gen-AI builders community lead<br>• AI community partnerships SG<br>• External event scouting<br>• Partnership pipeline" data-zh="• 黑客松筹备 + 合作伙伴<br>• Gen-AI创造者社区负责人<br>• 新加坡AI社区合作<br>• 外部活动考察<br>• 合作伙伴管线">• Hackathon planning + partners<br>• Gen-AI builders community lead<br>• AI community partnerships SG<br>• External event scouting<br>• Partnership pipeline</span>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ════════════════════════════
+       S4 — WEEK 11 GOAL PROGRESS
+       ════════════════════════════ -->
+  <div class="slide" id="s4" style="padding-top:56px;padding-bottom:56px">
+    <div class="orb" style="width:500px;height:500px;background:radial-gradient(circle,#10B981,transparent 70%);top:-180px;left:-120px;opacity:0.10;animation:f1 10s ease-in-out infinite;"></div>
+
+    <div class="a tag">
+      <span data-en="WEEK 11 · 6 GOALS · PROGRESS AUDIT" data-zh="第11周 · 6个目标 · 进展审计">WEEK 11 · 6 GOALS · PROGRESS AUDIT</span>
+    </div>
+
+    <div class="a" style="display:flex;align-items:center;gap:20px;margin-bottom:16px">
+      <div>
+        <div class="a D4" data-en="Goal Check." data-zh="目标验收。">Goal Check.</div>
+      </div>
+      <div style="display:flex;gap:10px;flex-shrink:0">
+        <div style="padding:8px 16px;border-radius:10px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25);text-align:center">
+          <div style="font-size:24px;font-weight:900;color:var(--amber-light);line-height:1" data-en="—/6" data-zh="—/6">—/6</div>
+          <div style="font-size:9px;color:var(--dim);letter-spacing:0.1em;margin-top:2px" data-en="GOALS MET" data-zh="目标达成">GOALS MET</div>
+        </div>
+        <div style="padding:8px 16px;border-radius:10px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);text-align:center">
+          <div style="font-size:24px;font-weight:900;color:var(--green-light);line-height:1">9/10</div>
+          <div style="font-size:9px;color:var(--dim);letter-spacing:0.1em;margin-top:2px" data-en="CHO AUDIT" data-zh="CHO审计">CHO AUDIT</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="a" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%">
+
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <div class="chk-partial">→</div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--green-light)" data-en="① COMMUNITY OUTREACH" data-zh="① 社区深耕">① COMMUNITY OUTREACH</div>
+        </div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.5">
+          <span data-en="Each team member joins 10+ communities across 3 verticals" data-zh="每位成员深入3个方向，融入10+个社区">Each team member joins 10+ communities across 3 verticals</span>
+        </div>
+        <div style="margin-top:6px;font-size:9px;font-weight:700;color:var(--dim)" data-en="PASS: 10+ per person · STATUS: —" data-zh="通过：每人10+ · 状态：—">PASS: 10+ per person · STATUS: —</div>
+      </div>
+
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <div class="chk-partial">→</div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--purple-light)" data-en="② AI COMMUNITY EVENT" data-zh="② AI社区活动">② AI COMMUNITY EVENT</div>
+        </div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.5">
+          <span data-en="1 flagship event published + shared in existing AI communities" data-zh="1场旗舰活动发布 + 投放到现有AI圈子">1 flagship event published + shared in existing AI communities</span>
+        </div>
+        <div style="margin-top:6px;font-size:9px;font-weight:700;color:var(--dim)" data-en="PASS: 15+ sign-ups in 48h · STATUS: —" data-zh="通过：48小时内15+报名 · 状态：—">PASS: 15+ sign-ups in 48h · STATUS: —</div>
+      </div>
+
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <div class="chk-partial">→</div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--amber-light)" data-en="③ FAN CEO PARTNERSHIP" data-zh="③ FAN CEO 合作">③ FAN CEO PARTNERSHIP</div>
+        </div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.5">
+          <span data-en="Named commitment secured — co-host, speaker, venue, or intro" data-zh="拿到明确承诺 — 联办、站台、场地或引荐">Named commitment secured — co-host, speaker, venue, or intro</span>
+        </div>
+        <div style="margin-top:6px;font-size:9px;font-weight:700;color:var(--dim)" data-en="PASS: specific role confirmed · STATUS: —" data-zh="通过：确认具体角色 · 状态：—">PASS: specific role confirmed · STATUS: —</div>
+      </div>
+
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <div class="chk-partial">→</div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--orange-light)" data-en="④ AI + MANIFESTATION PARTNERS" data-zh="④ AI + 显化合作伙伴">④ AI + MANIFESTATION PARTNERS</div>
+        </div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.5">
+          <span data-en="Connect with SG's top AI + manifestation community organisers" data-zh="对接新加坡头部AI + 显化社区负责人">Connect with SG's top AI + manifestation community organisers</span>
+        </div>
+        <div style="margin-top:6px;font-size:9px;font-weight:700;color:var(--dim)" data-en="PASS: 2+ replies + next step · STATUS: —" data-zh="通过：2+回复 + 下一步 · 状态：—">PASS: 2+ replies + next step · STATUS: —</div>
+      </div>
+
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <div class="chk-partial">→</div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--blue-light)" data-en="⑤ AI OUTREACH → 10 DOWNLOADS" data-zh="⑤ AI触达 → 10次下载">⑤ AI OUTREACH → 10 DOWNLOADS</div>
+        </div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.5">
+          <span data-en="10 TikTok accounts × 200 creators · reusable AI outreach system" data-zh="10个TikTok矩阵 × 200位创作者 · 可复用AI触达系统">10 TikTok accounts × 200 creators · reusable AI outreach system</span>
+        </div>
+        <div style="margin-top:6px;font-size:9px;font-weight:700;color:var(--dim)" data-en="PASS: 10 downloads + system live · STATUS: —" data-zh="通过：10次下载 + 系统上线 · 状态：—">PASS: 10 downloads + system live · STATUS: —</div>
+      </div>
+
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <div class="chk-partial">→</div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--red-light)" data-en="⑥ DATA BASELINE" data-zh="⑥ 数据底线">⑥ DATA BASELINE</div>
+        </div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.5">
+          <span data-en="Week 11 marketing baseline + 3 data-driven changes for Week 12" data-zh="第11周营销数据基准 + 下周的3项数据驱动调整">Week 11 marketing baseline + 3 data-driven changes for Week 12</span>
+        </div>
+        <div style="margin-top:6px;font-size:9px;font-weight:700;color:var(--dim)" data-en="PASS: VP knows what changes + why · STATUS: —" data-zh="通过：VP了解调整内容 + 原因 · 状态：—">PASS: VP knows what changes + why · STATUS: —</div>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ════════════════════════════
+       S5 — KEY ACHIEVEMENTS & FINDINGS
+       ════════════════════════════ -->
+  <div class="slide" id="s5" style="padding-top:56px;padding-bottom:56px">
+    <div class="orb" style="width:500px;height:500px;background:radial-gradient(circle,#7C3AED,transparent 70%);bottom:-180px;left:-120px;opacity:0.10;animation:f2 12s ease-in-out infinite;"></div>
+
+    <div class="a tag">
+      <span data-en="WEEK 11 · KEY ACHIEVEMENTS · LEARNINGS · FINDINGS" data-zh="第11周 · 核心成果 · 复盘 · 发现">WEEK 11 · KEY ACHIEVEMENTS · LEARNINGS · FINDINGS</span>
+    </div>
+
+    <div class="a D4" style="margin-bottom:4px" data-en="What Moved." data-zh="推进了什么。">What Moved.</div>
+    <div class="a D4 c-green" style="margin-bottom:20px" data-en="What We Learned." data-zh="学到了什么。">What We Learned.</div>
+
+    <div class="a" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;width:100%">
+
+      <div style="background:rgba(16,185,129,0.05);border:1px solid rgba(16,185,129,0.2);border-radius:14px;padding:18px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--green-light);margin-bottom:10px" data-en="✅ WINS" data-zh="✅ 成果">✅ WINS</div>
+        <div style="display:flex;flex-direction:column;gap:8px;font-size:12px;color:var(--muted);line-height:1.5">
+          <div data-en="• 3 WhatsApp communities LIVE (50+ AI builders in 10hrs)" data-zh="• 3个WhatsApp社群上线（AI创造者10小时破50人）">• 3 WhatsApp communities LIVE (50+ AI builders in 10hrs)</div>
+          <div data-en="• Update with this week's wins" data-zh="• 更新本周成果">• Update with this week's wins</div>
+          <div data-en="• Update with this week's wins" data-zh="• 更新本周成果">• Update with this week's wins</div>
+          <div data-en="• Update with this week's wins" data-zh="• 更新本周成果">• Update with this week's wins</div>
+        </div>
+      </div>
+
+      <div style="background:rgba(245,158,11,0.05);border:1px solid rgba(245,158,11,0.2);border-radius:14px;padding:18px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--amber-light);margin-bottom:10px" data-en="💡 LEARNINGS" data-zh="💡 复盘">💡 LEARNINGS</div>
+        <div style="display:flex;flex-direction:column;gap:8px;font-size:12px;color:var(--muted);line-height:1.5">
+          <div data-en="• Community &gt; downloads — belonging drives acquisition" data-zh="• 社区 &gt; 下载量 — 归属感驱动获客">• Community > downloads — belonging drives acquisition</div>
+          <div data-en="• Update with this week's learnings" data-zh="• 更新本周复盘">• Update with this week's learnings</div>
+          <div data-en="• Update with this week's learnings" data-zh="• 更新本周复盘">• Update with this week's learnings</div>
+          <div data-en="• Update with this week's learnings" data-zh="• 更新本周复盘">• Update with this week's learnings</div>
+        </div>
+      </div>
+
+      <div style="background:rgba(239,68,68,0.05);border:1px solid rgba(239,68,68,0.2);border-radius:14px;padding:18px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--red-light);margin-bottom:10px" data-en="❌ MISSED / BLOCKERS" data-zh="❌ 未完成 / 障碍">❌ MISSED / BLOCKERS</div>
+        <div style="display:flex;flex-direction:column;gap:8px;font-size:12px;color:var(--muted);line-height:1.5">
+          <div data-en="• Update with honest misses" data-zh="• 更新未完成事项">• Update with honest misses</div>
+          <div data-en="• Update with blockers" data-zh="• 更新障碍事项">• Update with blockers</div>
+          <div data-en="• Update with root cause" data-zh="• 更新根因分析">• Update with root cause</div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ════════════════════════════
+       S6 — WEEK 12 COMMITMENTS
+       ════════════════════════════ -->
+  <div class="slide" id="s6" style="padding-top:56px;padding-bottom:56px">
+    <div class="orb" style="width:500px;height:500px;background:radial-gradient(circle,#3B82F6,transparent 70%);top:-180px;right:-120px;opacity:0.10;animation:f1 11s ease-in-out infinite;"></div>
+
+    <div class="a tag">
+      <span data-en="WEEK 12 · COMMITMENTS · 16–20 MARCH 2026" data-zh="第12周 · 承诺 · 2026年3月16-20日">WEEK 12 · COMMITMENTS · 16–20 MARCH 2026</span>
+    </div>
+
+    <div class="a D4" style="margin-bottom:4px" data-en="Next Week." data-zh="下一周。">Next Week.</div>
+    <div class="a D4 c-blue" style="margin-bottom:20px" data-en="What Changes." data-zh="怎么调整。">What Changes.</div>
+
+    <div class="a" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;width:100%;margin-bottom:20px">
+
+      <div style="background:rgba(59,130,246,0.05);border:1px solid rgba(59,130,246,0.2);border-radius:12px;padding:16px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--blue-light);margin-bottom:8px">🧠 MARC.AI</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.55">
+          <span data-en="• 3 demos booked<br>• MVP v1 testable<br>• Pricing defined" data-zh="• 预约3个演示<br>• MVP v1可测试<br>• 定价确定">• 3 demos booked<br>• MVP v1 testable<br>• Pricing defined</span>
+        </div>
+      </div>
+
+      <div style="background:rgba(16,185,129,0.05);border:1px solid rgba(16,185,129,0.2);border-radius:12px;padding:16px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--green-light);margin-bottom:8px">🌱 SOULGARDEN</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.55">
+          <span data-en="• 50+ organic downloads<br>• Community engagement active<br>• AI influencer content live" data-zh="• 50+自然下载<br>• 社区互动活跃<br>• AI网红内容上线">• 50+ organic downloads<br>• Community engagement active<br>• AI influencer content live</span>
+        </div>
+      </div>
+
+      <div style="background:rgba(249,115,22,0.05);border:1px solid rgba(249,115,22,0.2);border-radius:12px;padding:16px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--orange-light);margin-bottom:8px">⚡ RITESET</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.55">
+          <span data-en="• Live on App Store<br>• First 20 downloads<br>• Fitness community launch" data-zh="• 上架App Store<br>• 首批20次下载<br>• 健身社区启动">• Live on App Store<br>• First 20 downloads<br>• Fitness community launch</span>
+        </div>
+      </div>
+
+      <div style="background:rgba(139,92,246,0.05);border:1px solid rgba(139,92,246,0.2);border-radius:12px;padding:16px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--purple-light);margin-bottom:8px">🔮 GODGPT</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.55">
+          <span data-en="• Growth strategy defined<br>• Content calendar active<br>• Baseline metrics set" data-zh="• 增长策略确定<br>• 内容日历启动<br>• 基准指标设定">• Growth strategy defined<br>• Content calendar active<br>• Baseline metrics set</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="a" style="padding:16px 20px;background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.22);border-radius:12px;width:100%">
+      <div style="font-size:10px;font-weight:700;letter-spacing:0.16em;color:var(--blue-light);margin-bottom:8px" data-en="DATA-DRIVEN CHANGES FOR WEEK 12" data-zh="第12周数据驱动调整">DATA-DRIVEN CHANGES FOR WEEK 12</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;font-size:12px;color:var(--muted);line-height:1.5">
+        <div>
+          <span style="font-weight:700;color:var(--off)" data-en="Change 1:" data-zh="调整1：">Change 1:</span>
+          <span data-en=" Update based on Week 11 data" data-zh=" 根据第11周数据更新"> Update based on Week 11 data</span>
+        </div>
+        <div>
+          <span style="font-weight:700;color:var(--off)" data-en="Change 2:" data-zh="调整2：">Change 2:</span>
+          <span data-en=" Update based on Week 11 data" data-zh=" 根据第11周数据更新"> Update based on Week 11 data</span>
+        </div>
+        <div>
+          <span style="font-weight:700;color:var(--off)" data-en="Change 3:" data-zh="调整3：">Change 3:</span>
+          <span data-en=" Update based on Week 11 data" data-zh=" 根据第11周数据更新"> Update based on Week 11 data</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- ════════════════════════════
+       S7 — CLOSING
+       ════════════════════════════ -->
+  <div class="slide center" id="s7">
+    <div class="orb" style="width:600px;height:600px;background:radial-gradient(circle,#7C3AED,transparent 70%);bottom:-200px;left:-100px;opacity:0.13;animation:f1 14s ease-in-out infinite;"></div>
+    <div class="orb" style="width:300px;height:300px;background:radial-gradient(circle,#10B981,transparent 70%);top:-60px;right:120px;opacity:0.09;animation:f2 10s ease-in-out infinite;"></div>
+
+    <div class="a tag">
+      <span data-en="WEEK 11 CLOSE · BRAND DIRECTOR · 13 MARCH 2026" data-zh="第11周收尾 · 品牌总监 · 2026年3月13日">WEEK 11 CLOSE · BRAND DIRECTOR · 13 MARCH 2026</span>
+    </div>
+
+    <div class="a" style="font-size:17px;font-weight:500;color:var(--dim);margin-bottom:14px">
+      <span data-en="Every product has a number. Every person has an owner." data-zh="每个产品有数据。每个人有分工。">Every product has a number. Every person has an owner.</span>
+    </div>
+
+    <div class="a D3" data-en="No Hiding" data-zh="不藏着掖着">No Hiding</div>
+    <div class="a D3 c-green" data-en="Behind Vision." data-zh="不拿愿景当挡箭牌。">Behind Vision.</div>
+
+    <div class="divider a" style="margin:22px auto"></div>
+
+    <div class="a" style="font-size:15px;color:var(--muted);line-height:1.7;max-width:640px">
+      <span data-en="Products first. Numbers first. Then vision. This is the new standard — every Friday deck starts with where our apps stand, who owns what, and what the data says. No illusions." data-zh="产品先行。数据先行。然后才是愿景。这是新标准 — 每周五的复盘从产品现状、团队分工和数据说起。不自欺。">Products first. Numbers first. Then vision. This is the new standard — every Friday deck starts with where our apps stand, who owns what, and what the data says. No illusions.</span>
+    </div>
+
+    <div class="a" style="margin-top:26px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center">
+      <div style="padding:10px 18px;border-radius:12px;background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.22);text-align:center">
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--purple-light)">🔮 GODGPT</div>
+      </div>
+      <div style="padding:10px 18px;border-radius:12px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.22);text-align:center">
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--green-light)">🌱 SOULGARDEN</div>
+      </div>
+      <div style="padding:10px 18px;border-radius:12px;background:rgba(249,115,22,0.08);border:1px solid rgba(249,115,22,0.22);text-align:center">
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--orange-light)">⚡ RITESET</div>
+      </div>
+      <div style="padding:10px 18px;border-radius:12px;background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.22);text-align:center">
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--blue-light)">🧠 MARC.AI</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- BOTTOM UI -->
+  <div id="ui-bot">
+    <div id="counter">01 / 07</div>
+    <div id="dots"></div>
+    <div class="nav-arrows">
+      <button class="nav-btn" onclick="prevSlide()">←</button>
+      <button class="nav-btn" onclick="nextSlide()">→</button>
+    </div>
+  </div>
+
+</div></div>
+
+<script>
+let cur = 0, lang = 'en';
+const slides = Array.from(document.querySelectorAll('.slide'));
+const N = slides.length;
+
+const dotsEl = document.getElementById('dots');
+slides.forEach((_,i) => {
+  const d = document.createElement('div');
+  d.className = 'dot' + (i===0?' active':'');
+  d.onclick = () => goTo(i);
+  dotsEl.appendChild(d);
+});
+
+function goTo(n) {
+  if (n === cur) return;
+  slides[cur].classList.remove('active');
+  slides[cur].classList.add('prev');
+  const old = cur;
+  setTimeout(() => slides[old].classList.remove('prev'), 650);
+  cur = ((n%N)+N)%N;
+  slides[cur].classList.add('active');
+  triggerAnims(slides[cur]);
+  updateUI();
+}
+function nextSlide() { goTo(cur+1); }
+function prevSlide() { goTo(cur-1); }
+
+function triggerAnims(slide) {
+  const items = slide.querySelectorAll('.a');
+  items.forEach((el,i) => {
+    el.style.animation = 'none';
+    void el.offsetWidth;
+    el.style.animation = `fadeUp 0.5s ease ${(0.04+i*0.07).toFixed(2)}s both`;
+  });
+}
+
+function updateUI() {
+  document.getElementById('counter').textContent =
+    String(cur+1).padStart(2,'0') + ' / ' + String(N).padStart(2,'0');
+  document.querySelectorAll('.dot').forEach((d,i) => d.classList.toggle('active', i===cur));
+  document.getElementById('progress').style.width = ((cur+1)/N*100)+'%';
+}
+
+function setLang(l) {
+  lang = l;
+  document.getElementById('btn-en').classList.toggle('active', l==='en');
+  document.getElementById('btn-zh').classList.toggle('active', l==='zh');
+  document.querySelectorAll('[data-en]').forEach(el => {
+    el.innerHTML = el.getAttribute('data-'+l) || el.getAttribute('data-en');
+  });
+  document.body.style.fontFamily = l==='zh'
+    ? "'Noto Sans SC','Inter',sans-serif"
+    : "'Inter',sans-serif";
+  document.documentElement.lang = l==='zh' ? 'zh-Hans' : 'en';
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key==='ArrowRight'||e.key===' '||e.key==='PageDown') { e.preventDefault(); nextSlide(); }
+  if (e.key==='ArrowLeft' ||e.key==='PageUp')                { e.preventDefault(); prevSlide(); }
+});
+
+function scaleDeck() {
+  const s = Math.min(window.innerWidth/1280, window.innerHeight/800, 1.2);
+  document.getElementById('deck').style.transform = `scale(${s})`;
+}
+scaleDeck();
+window.addEventListener('resize', scaleDeck);
+
+slides[0].classList.add('active');
+triggerAnims(slides[0]);
+updateUI();
+</script>
+</body>
+</html>
