@@ -420,20 +420,35 @@ html, body { width:100%;height:100%;background:#000;color:var(--white);font-fami
           </div>
         </div>
 
-        <!-- Compact Timeline -->
-        <div class="a" style="margin-bottom:8px">
-          <div style="font-size:8px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--dim);margin-bottom:5px" data-en="ROADMAP → LAUNCH JUN 9" data-zh="路线图 → 6月9日上线">ROADMAP → LAUNCH JUN 9</div>
-          <div style="display:flex;gap:0;width:100%;height:18px;border-radius:4px;overflow:hidden;background:var(--surface);border:1px solid var(--border)">
-            <div style="width:27%;height:100%;background:rgba(59,130,246,0.3);display:flex;align-items:center;justify-content:center;font-size:6px;font-weight:800;color:var(--blue-light);letter-spacing:0.04em;border-right:1px solid var(--border)">P1 INTERNAL</div>
-            <div style="width:27%;height:100%;display:flex;align-items:center;justify-content:center;font-size:6px;font-weight:700;color:var(--dim);letter-spacing:0.04em;border-right:1px solid var(--border)">P2 BETA</div>
-            <div style="width:20%;height:100%;display:flex;align-items:center;justify-content:center;font-size:6px;font-weight:700;color:var(--dim);letter-spacing:0.04em;border-right:1px solid var(--border)">PRE-LAUNCH</div>
-            <div style="width:26%;height:100%;display:flex;align-items:center;justify-content:center;font-size:6px;font-weight:700;color:var(--dim);letter-spacing:0.04em">🚀 LAUNCH</div>
+        <!-- Visual Timeline Progress Bar -->
+        <div class="a" style="margin-bottom:10px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+            <div style="font-size:9px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--dim)" data-en="ROADMAP TO LAUNCH" data-zh="上线路线图">ROADMAP TO LAUNCH</div>
+            <div style="font-size:10px;font-weight:800;color:var(--blue-light)" data-en="Week 4 of 14" data-zh="第4周/共14周">Week 4 of 14</div>
           </div>
-          <div style="display:flex;justify-content:space-between;margin-top:3px">
-            <div style="font-size:7px;color:var(--blue-light);font-weight:700">◉ NOW W4</div>
-            <div style="font-size:7px;color:var(--dim)">Demo Apr 5</div>
-            <div style="font-size:7px;color:var(--dim)">Beta Apr 13</div>
-            <div style="font-size:7px;color:var(--dim)">🚀 Jun 9</div>
+          <!-- Progress bar -->
+          <div style="position:relative;width:100%;height:20px;border-radius:10px;background:var(--surface);border:1px solid var(--border);overflow:hidden;margin-bottom:6px">
+            <div style="position:absolute;top:0;left:0;height:100%;width:28%;background:linear-gradient(90deg,rgba(59,130,246,0.4),rgba(59,130,246,0.6));border-radius:10px"></div>
+            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;color:var(--off);letter-spacing:0.06em" data-en="P1 INTERNAL BUILD → Demo Apr 5" data-zh="P1内部开发 → 4月5日演示">P1 INTERNAL BUILD → Demo Apr 5</div>
+          </div>
+          <!-- Timeline markers -->
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;position:relative">
+            <div style="text-align:left">
+              <div style="font-size:8px;font-weight:700;color:var(--blue-light)">◉ NOW</div>
+              <div style="font-size:7px;color:var(--dim)">W4 · Mar 13</div>
+            </div>
+            <div style="text-align:center">
+              <div style="font-size:8px;font-weight:700;color:var(--dim)">🎯 DEMO</div>
+              <div style="font-size:7px;color:var(--dim)">Apr 5</div>
+            </div>
+            <div style="text-align:center">
+              <div style="font-size:8px;font-weight:700;color:var(--dim)">🧪 BETA</div>
+              <div style="font-size:7px;color:var(--dim)">Apr 13</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:8px;font-weight:700;color:var(--dim)">🚀 LAUNCH</div>
+              <div style="font-size:7px;color:var(--dim)">Jun 9</div>
+            </div>
           </div>
         </div>
 
@@ -441,7 +456,6 @@ html, body { width:100%;height:100%;background:#000;color:var(--white);font-fami
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px">
             <div style="font-size:9px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--dim)" data-en="THIS WEEK →" data-zh="本周 →">THIS WEEK →</div>
             <div style="display:flex;gap:4px">
-              <span style="font-size:8px;font-weight:700;padding:2px 6px;border-radius:4px;background:rgba(59,130,246,0.15);color:var(--blue-light)">③ FAN CEO</span>
               <span style="font-size:8px;font-weight:700;padding:2px 6px;border-radius:4px;background:rgba(59,130,246,0.15);color:var(--blue-light)">④ PARTNERS</span>
             </div>
           </div>
