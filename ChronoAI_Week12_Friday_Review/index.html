@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<title>ChronoAI — Week 12 · Friday Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --black: #0e0e0e;
+  --white: #f5f3ee;
+  --cream: #edeae2;
+  --ink: #1a1a1a;
+  --muted: #6b6760;
+  --border: #d4d0c8;
+  --purple: #534AB7;
+  --teal: #0F6E56;
+  --coral: #D85A30;
+  --amber: #BA7517;
+  --purple-bg: #EEEDFE;
+  --teal-bg: #E1F5EE;
+  --coral-bg: #FAECE7;
+  --amber-bg: #FAEEDA;
+  --nyx: #7C3AED;
+  --nyx-bg: #EDE9FD;
+}
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  background: var(--black);
+  font-family: 'Instrument Sans', sans-serif;
+}
+
+/* DECK CONTAINER */
+.deck {
+  width: 100vw; height: 100vh;
+  position: relative;
+}
+
+/* EACH SLIDE */
+.slide {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.45s ease;
+  overflow: hidden;
+}
+.slide.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ─── SLIDE THEMES ─── */
+.slide-dark  { background: var(--black); color: var(--white); }
+.slide-light { background: var(--white); color: var(--ink); }
+.slide-cream { background: var(--cream); color: var(--ink); }
+
+/* ─── TYPOGRAPHY ─── */
+.eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px; letter-spacing: .12em;
+  text-transform: uppercase;
+  opacity: .45;
+  display: flex; align-items: center; gap: 10px;
+}
+.eyebrow::before { content: ''; display: block; width: 20px; height: 1px; background: currentColor; opacity: .5; }
+
+.display {
+  font-family: 'DM Serif Display', serif;
+  line-height: 1.05; letter-spacing: -.01em;
+}
+.display em { font-style: italic; opacity: .5; }
+
+.mono { font-family: 'DM Mono', monospace; }
+
+/* ─── NAV ─── */
+.nav-bar {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+  height: 48px;
+  background: rgba(14,14,14,.92);
+  backdrop-filter: blur(12px);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 28px;
+  border-top: 1px solid rgba(255,255,255,.07);
+}
+.nav-counter { font-family: 'DM Mono', monospace; font-size: 11px; color: rgba(245,243,238,.35); letter-spacing: .08em; }
+.nav-title-sm { font-family: 'DM Mono', monospace; font-size: 11px; color: rgba(245,243,238,.45); letter-spacing: .06em; text-transform: uppercase; }
+.nav-arrows { display: flex; gap: 8px; }
+.nav-arrows button {
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.12);
+  color: rgba(245,243,238,.7);
+  width: 32px; height: 32px; border-radius: 6px;
+  font-size: 14px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .15s;
+}
+.nav-arrows button:hover { background: rgba(255,255,255,.15); }
+.nav-arrows button:disabled { opacity: .25; cursor: default; }
+
+/* ─── PROGRESS BAR ─── */
+.progress {
+  position: fixed; top: 0; left: 0; z-index: 201;
+  height: 2px; background: var(--purple);
+  transition: width .4s ease;
+}
+
+/* ─── PILL / TAG ─── */
+.pill {
+  font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500;
+  padding: 4px 11px; border-radius: 20px; letter-spacing: .04em;
+  display: inline-flex; align-items: center; gap: 5px;
+}
+.pill::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; opacity: .65; }
+.pill-done   { background: var(--teal-bg);   color: var(--teal);   }
+.pill-live   { background: var(--purple-bg); color: var(--purple); }
+.pill-wip    { background: var(--amber-bg);  color: var(--amber);  }
+.pill-new    { background: var(--coral-bg);  color: var(--coral);  }
+.pill-dark   { background: rgba(255,255,255,.1); color: rgba(245,243,238,.7); }
+
+.tag {
+  font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500;
+  padding: 4px 9px; border-radius: 6px; letter-spacing: .04em;
+}
+.tag-nyx    { background: var(--nyx-bg);    color: var(--nyx); }
+.tag-purple { background: var(--purple-bg); color: var(--purple); }
+.tag-teal   { background: var(--teal-bg);   color: var(--teal); }
+.tag-amber  { background: var(--amber-bg);  color: var(--amber); }
+.tag-coral  { background: var(--coral-bg);  color: var(--coral); }
+
+/* ─── DIVIDER ─── */
+.rule { width: 100%; height: 1px; background: currentColor; opacity: .1; }
+.rule-v { width: 1px; height: 100%; background: currentColor; opacity: .1; }
+
+/* ─── CARD ─── */
+.card {
+  border-radius: 12px; padding: 20px 22px;
+  border: 1px solid rgba(0,0,0,.08);
+}
+.card-light { background: var(--white); }
+.card-cream { background: var(--cream); }
+.card-dark  { background: rgba(255,255,255,.05); border-color: rgba(255,255,255,.08); }
+
+/* ─── ENTRY ANIMATIONS ─── */
+.slide.active .anim { animation: slideUp .5s ease both; }
+.slide.active .anim:nth-child(1) { animation-delay: .05s; }
+.slide.active .anim:nth-child(2) { animation-delay: .13s; }
+.slide.active .anim:nth-child(3) { animation-delay: .22s; }
+.slide.active .anim:nth-child(4) { animation-delay: .31s; }
+.slide.active .anim:nth-child(5) { animation-delay: .40s; }
+.slide.active .anim:nth-child(6) { animation-delay: .49s; }
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ───────────────────────────────────────────
+   SLIDE-SPECIFIC LAYOUTS
+─────────────────────────────────────────── */
+
+/* SLIDE 1 — COVER */
+#s1 {
+  background: var(--black);
+  justify-content: center;
+  padding: 0 10%;
+}
+#s1 .glow {
+  position: absolute; top: -120px; right: -100px;
+  width: 600px; height: 600px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(83,74,183,.2) 0%, transparent 65%);
+  pointer-events: none;
+}
+#s1 .glow2 {
+  position: absolute; bottom: -80px; left: 5%;
+  width: 350px; height: 350px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,229,255,.05) 0%, transparent 65%);
+  pointer-events: none;
+}
+#s1 .inner { position: relative; z-index: 1; max-width: 640px; display: flex; flex-direction: column; gap: 20px; }
+#s1 .pills-row { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* SLIDE 2 — AGENDA */
+#s2 { background: var(--cream); padding: 52px 8% 72px; justify-content: center; }
+#s2 .inner { max-width: 900px; margin: 0 auto; width: 100%; }
+#s2 .agenda-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 28px; }
+#s2 .agenda-item {
+  border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
+  display: flex;
+}
+#s2 .ai-num {
+  min-width: 60px; display: flex; align-items: center; justify-content: center;
+  font-family: 'DM Mono', monospace; font-size: 26px; font-weight: 500;
+  flex-shrink: 0;
+}
+#s2 .ai-body { padding: 14px 16px; background: var(--white); border-left: 1px solid var(--border); flex: 1; }
+#s2 .ai-label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; }
+#s2 .ai-name { font-size: 14px; font-weight: 600; color: var(--ink); margin-top: 3px; line-height: 1.4; }
+#s2 .agenda-item.col2 { grid-column: span 2; }
+
+/* SLIDES 3/4/5 — PRIORITY DEEP DIVE */
+.slide-priority { padding: 52px 8% 72px; }
+.sp-header { display: flex; align-items: flex-start; gap: 28px; margin-bottom: 28px; }
+.sp-num {
+  font-family: 'DM Mono', monospace; font-size: 40px; font-weight: 500;
+  line-height: 1; flex-shrink: 0; padding: 8px 16px;
+  border-radius: 10px; margin-top: 2px;
+}
+.sp-title-block { display: flex; flex-direction: column; gap: 6px; }
+.sp-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; }
+.sp-title { font-family: 'DM Serif Display', serif; font-size: clamp(22px,2.8vw,32px); line-height: 1.15; }
+.sp-body { flex: 1; overflow: hidden; }
+
+/* SLIDE 3 — P1 two-col */
+#s3 { background: var(--white); }
+#s3 .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; height: calc(100% - 140px); }
+#s3 .col { display: flex; flex-direction: column; gap: 12px; }
+#s3 .col-label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+#s3 .tag-cloud { display: flex; flex-wrap: wrap; gap: 6px; }
+#s3 .body-text { font-size: 14px; color: var(--ink); line-height: 1.72; }
+
+/* SLIDE 4 — P2 automation */
+#s4 { background: var(--black); }
+#s4 .flows { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 6px; height: calc(100% - 160px); }
+#s4 .flow-card {
+  border: 1px solid rgba(255,255,255,.1); border-radius: 14px;
+  padding: 22px 24px; background: rgba(255,255,255,.04);
+  display: flex; flex-direction: column; gap: 10px;
+}
+#s4 .fc-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; opacity: .4; }
+#s4 .fc-name { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--white); line-height: 1.2; }
+#s4 .fc-body { font-size: 13.5px; color: rgba(245,243,238,.6); line-height: 1.7; flex: 1; }
+#s4 .fc-steps { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }
+#s4 .fc-step {
+  display: flex; align-items: center; gap: 10px;
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  color: rgba(245,243,238,.5); letter-spacing: .04em;
+}
+#s4 .fc-step::before { content: '→'; color: var(--purple); flex-shrink: 0; }
+
+/* SLIDE 5 — P3 event */
+#s5 { background: var(--cream); }
+#s5 .event-layout { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 24px; height: calc(100% - 150px); }
+#s5 .ev-left { display: flex; flex-direction: column; gap: 14px; }
+#s5 .ev-right { display: flex; flex-direction: column; gap: 12px; }
+#s5 .framework-row { display: flex; align-items: center; gap: 12px; }
+#s5 .fw-block {
+  flex: 1; border: 1px solid var(--border); border-radius: 10px;
+  padding: 14px 16px; background: var(--white);
+  display: flex; flex-direction: column; gap: 4px;
+}
+#s5 .fw-num { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: .06em; }
+#s5 .fw-name { font-size: 14px; font-weight: 700; color: var(--ink); }
+#s5 .fw-arrow { font-size: 18px; color: var(--muted); flex-shrink: 0; }
+#s5 .detail-card { border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; background: var(--white); }
+#s5 .dc-label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 5px; }
+#s5 .dc-text { font-size: 13px; color: var(--ink); line-height: 1.65; }
+
+/* SLIDE 6 — PORTFOLIO */
+#s6 { background: var(--white); padding: 52px 8% 72px; }
+#s6 .port-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 24px; height: calc(100% - 140px); }
+#s6 .port-card {
+  border: 1px solid var(--border); border-radius: 12px;
+  padding: 18px 18px; background: var(--cream);
+  display: flex; flex-direction: column; gap: 8px;
+}
+#s6 .pc-head { display: flex; align-items: center; gap: 8px; }
+#s6 .pc-emoji { font-size: 22px; }
+#s6 .pc-name { font-size: 14px; font-weight: 700; color: var(--ink); }
+#s6 .pc-stat { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: .04em; line-height: 1.5; }
+#s6 .pc-note { font-size: 12.5px; color: var(--ink); line-height: 1.65; flex: 1; }
+
+/* SLIDE 7 — NORTH STAR */
+#s7 {
+  background: var(--black);
+  justify-content: center;
+  padding: 0 10%;
+}
+#s7 .glow {
+  position: absolute; top: -100px; right: -60px;
+  width: 500px; height: 500px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(83,74,183,.22) 0%, transparent 65%);
+  pointer-events: none;
+}
+#s7 .inner { position: relative; z-index: 1; max-width: 820px; width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+#s7 .left { display: flex; flex-direction: column; gap: 18px; }
+#s7 .principles { display: flex; flex-direction: column; gap: 14px; }
+#s7 .principle { display: flex; gap: 12px; align-items: flex-start; }
+#s7 .p-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+#s7 .p-text { font-size: 13.5px; color: rgba(245,243,238,.65); line-height: 1.65; }
+#s7 .p-text strong { color: var(--white); }
+#s7 .quote-side { display: flex; flex-direction: column; gap: 16px; padding-left: 32px; border-left: 1px solid rgba(255,255,255,.1); }
+#s7 .q-text { font-family: 'DM Serif Display', serif; font-style: italic; font-size: clamp(18px, 2.2vw, 26px); color: rgba(245,243,238,.85); line-height: 1.5; }
+#s7 .q-attr { font-family: 'DM Mono', monospace; font-size: 11px; color: rgba(245,243,238,.3); letter-spacing: .06em; }
+
+</style>
+</head>
+<body>
+
+<a href="https://wndywangaelf.github.io/WendyMarketing" style="position:fixed;top:14px;left:20px;z-index:210;font-family:'DM Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(245,243,238,.45);text-decoration:none;padding:8px 12px;border-radius:8px;border:1px solid rgba(255,255,255,.12);background:rgba(14,14,14,.75);backdrop-filter:blur(8px);transition:color .2s,border-color .2s;pointer-events:all" onmouseover="this.style.color='rgba(245,243,238,.85)'" onmouseout="this.style.color='rgba(245,243,238,.45)'" aria-label="Back to Marketing Hub">← Overview</a>
+
+<!-- PROGRESS -->
+<div class="progress" id="progress"></div>
+
+<!-- DECK -->
+<div class="deck" id="deck">
+
+  <!-- ══════════════════════════════════════
+       SLIDE 1 — COVER
+  ══════════════════════════════════════ -->
+  <div class="slide slide-dark active" id="s1">
+    <div class="glow"></div>
+    <div class="glow2"></div>
+    <div class="inner">
+      <div class="eyebrow anim" style="color:rgba(245,243,238,.4);">ChronoAI · Brand Director · Week 12 · Friday Review</div>
+      <div class="display anim" style="font-size:clamp(44px,6vw,72px); color:var(--white);">
+        3 Priorities.<br><em>Real progress.</em>
+      </div>
+      <p class="anim" style="font-size:15px; color:rgba(245,243,238,.5); max-width:520px; line-height:1.65;">
+        From deep product research to live automation and a keynote ready for stage — building the infrastructure we'll stand on for the next 12 months.
+      </p>
+      <div class="pills-row anim">
+        <span class="pill pill-live" style="background:var(--purple); color:#fff;">Week 12 · 21 Mar 2026</span>
+        <span class="pill pill-dark">Brand Director</span>
+        <span class="pill pill-dark">3 Priorities</span>
+        <span class="pill pill-dark">4 Portfolio Products</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SLIDE 2 — AGENDA
+  ══════════════════════════════════════ -->
+  <div class="slide slide-cream" id="s2">
+    <div class="inner">
+      <div class="eyebrow anim" style="color:var(--muted);">Agenda · Week 12</div>
+      <div class="display anim" style="font-size:clamp(28px,3.5vw,42px); color:var(--ink); margin-top:10px;">
+        This week in full.
+      </div>
+      <div class="agenda-grid anim">
+
+        <div class="agenda-item">
+          <div class="ai-num" style="background:var(--nyx-bg); color:var(--nyx);">P1</div>
+          <div class="ai-body">
+            <div class="ai-label">Product Intelligence</div>
+            <div class="ai-name">Deep dive — NyxID, Sisyphus &amp; Ornn<br>Full docs complete, Aevatar daily syncs</div>
+          </div>
+        </div>
+
+        <div class="agenda-item">
+          <div class="ai-num" style="background:var(--amber-bg); color:var(--amber);">P2</div>
+          <div class="ai-body">
+            <div class="ai-label">Marketing Automation</div>
+            <div class="ai-name">n8n CMO workflow live<br>Daily brief + weekly recap automated</div>
+          </div>
+        </div>
+
+        <div class="agenda-item">
+          <div class="ai-num" style="background:var(--coral-bg); color:var(--coral);">P3</div>
+          <div class="ai-body">
+            <div class="ai-label">AI Community Event</div>
+            <div class="ai-name">What's Next Ep.1 keynote built<br>Presenting now for internal review</div>
+          </div>
+        </div>
+
+        <div class="agenda-item">
+          <div class="ai-num" style="background:var(--teal-bg); color:var(--teal);">+</div>
+          <div class="ai-body">
+            <div class="ai-label">Portfolio</div>
+            <div class="ai-name">GodGPT · SoulGarden · Riteset · Sisyphus<br>Nurturing organic growth</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SLIDE 3 — P1 PRODUCT INTELLIGENCE
+  ══════════════════════════════════════ -->
+  <div class="slide slide-light slide-priority" id="s3">
+    <div class="sp-header anim">
+      <div class="sp-num" style="background:var(--nyx-bg); color:var(--nyx);">P1</div>
+      <div class="sp-title-block">
+        <span class="sp-label" style="color:var(--nyx);">Product Intelligence</span>
+        <span class="sp-title" style="color:var(--ink);">Deep dive into NyxID, Sisyphus &amp; Ornn</span>
+        <span class="pill pill-done" style="margin-top:4px;">Delivered</span>
+      </div>
+    </div>
+    <div class="cols anim">
+      <div class="col">
+        <div class="col-label">NyxID + Ornn — full documentation complete</div>
+        <p class="body-text">Both products now have a complete brand brain — a single source of truth for marketing, product, and GTM. Seven documents per product, all mapped and ready to activate.</p>
+        <div class="tag-cloud">
+          <span class="tag tag-nyx">Brand Guidelines</span>
+          <span class="tag tag-nyx">Brand Voice Guide</span>
+          <span class="tag tag-nyx">ICP</span>
+          <span class="tag tag-nyx">Manifesto</span>
+          <span class="tag tag-nyx">Product Info</span>
+          <span class="tag tag-nyx">Positioning</span>
+          <span class="tag tag-nyx">Competitive Landscape</span>
+        </div>
+        <p class="body-text" style="margin-top:8px;">NyxID owns the AI-native identity category — self-hosted, open source, a position no competitor occupies. Ornn defines Skill-as-a-Service from scratch.</p>
+      </div>
+      <div class="col">
+        <div class="col-label">Sisyphus — north star product, in active build</div>
+        <div class="card card-cream" style="flex:1; display:flex; flex-direction:column; gap:10px;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:22px;">🧠</span>
+            <span style="font-size:15px; font-weight:700; color:var(--ink);">Sisyphus</span>
+            <span class="pill pill-new" style="margin-top:0;">Main Focus</span>
+          </div>
+          <p class="body-text">Positioning and features are still being shaped — this is by design. Daily check-ins with the Aevatar team are running. My role is to stay embedded so brand thinking evolves alongside the build, not after it.</p>
+          <p class="body-text" style="color:var(--muted);">This is where the company's biggest bets are placed. Everything else is in service of getting this right.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SLIDE 4 — P2 AUTOMATION
+  ══════════════════════════════════════ -->
+  <div class="slide slide-dark slide-priority" id="s4">
+    <div class="sp-header anim">
+      <div class="sp-num" style="background:var(--amber-bg); color:var(--amber);">P2</div>
+      <div class="sp-title-block">
+        <span class="sp-label" style="color:var(--amber);">Marketing Automation</span>
+        <span class="sp-title" style="color:var(--white);">n8n CMO — built and live</span>
+        <span class="pill pill-live" style="margin-top:4px; background:var(--purple); color:#fff;">Live Demo</span>
+      </div>
+    </div>
+    <div class="flows anim">
+      <div class="flow-card">
+        <div class="fc-label">Flow 01 · Daily</div>
+        <div class="fc-name">Market Brief<br>→ Published Posts</div>
+        <div class="fc-body">Every morning the system pulls market signals, runs them through a brand-aware AI layer, and generates ready-to-publish content. No manual brief, no copywriting queue.</div>
+        <div class="fc-steps">
+          <div class="fc-step">Pull daily market signals</div>
+          <div class="fc-step">Brand voice AI layer</div>
+          <div class="fc-step">Generate platform-ready content</div>
+          <div class="fc-step">Queue for publish</div>
+        </div>
+      </div>
+      <div class="flow-card">
+        <div class="fc-label">Flow 02 · Weekly</div>
+        <div class="fc-name">CMO Recap<br>→ Next-step Brief</div>
+        <div class="fc-body">End-of-week automation synthesises performance signals, market moves, and content themes into a clear strategic brief — what to double down on and what to cut.</div>
+        <div class="fc-steps">
+          <div class="fc-step">Aggregate week's performance data</div>
+          <div class="fc-step">Scan market and competitor signals</div>
+          <div class="fc-step">Synthesise into CMO brief</div>
+          <div class="fc-step">Output: Friday decision doc</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SLIDE 5 — P3 KEYNOTE
+  ══════════════════════════════════════ -->
+  <div class="slide slide-cream slide-priority" id="s5">
+    <div class="sp-header anim">
+      <div class="sp-num" style="background:var(--coral-bg); color:var(--coral);">P3</div>
+      <div class="sp-title-block">
+        <span class="sp-label" style="color:var(--coral);">AI Community Event</span>
+        <span class="sp-title" style="color:var(--ink);">What's Next Ep.1 — keynote ready to present</span>
+        <span class="pill pill-new" style="margin-top:4px;">Presenting Now · Fri 27 Mar · 50 Attendees</span>
+      </div>
+    </div>
+    <div class="event-layout anim">
+      <div class="ev-left">
+        <p class="body-text" style="font-size:14px; color:var(--ink); line-height:1.75;">
+          Our first AI community event. 10-minute keynote slot. Full run-of-show prepared with Calvin and Dannick — script, timing, handoffs all locked.
+        </p>
+        <div class="col-label" style="font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); letter-spacing:.08em; text-transform:uppercase; padding-bottom:10px; border-bottom:1px solid var(--border);">The framework</div>
+        <div class="framework-row">
+          <div class="fw-block">
+            <div class="fw-num">Layer 1</div>
+            <div class="fw-name">Design</div>
+          </div>
+          <div class="fw-arrow">→</div>
+          <div class="fw-block">
+            <div class="fw-num">Layer 2</div>
+            <div class="fw-name">Deploy</div>
+          </div>
+          <div class="fw-arrow">→</div>
+          <div class="fw-block">
+            <div class="fw-num">Layer 3</div>
+            <div class="fw-name">GTM</div>
+          </div>
+        </div>
+        <p class="body-text" style="font-size:13px; color:var(--muted); line-height:1.7;">
+          Not a product demo. The story of what happens after you ship a vibe-coded app — two real products, two real GTM approaches, honest lessons.
+        </p>
+      </div>
+      <div class="ev-right">
+        <div class="detail-card">
+          <div class="dc-label">Wendy</div>
+          <div class="dc-text">Opening, framework context, GTM layer — SoulGarden vs Riteset approaches. Closes the keynote.</div>
+        </div>
+        <div class="detail-card">
+          <div class="dc-label">Calvin</div>
+          <div class="dc-text">Deploy layer. Live terminal. Real stack, real decisions, one thing that actually broke on launch.</div>
+        </div>
+        <div class="detail-card">
+          <div class="dc-label">Dannick's video</div>
+          <div class="dc-text">~90 sec before/after — raw vibe-coded UI to polished App Store-ready product. Typography, tokens, components.</div>
+        </div>
+        <div class="detail-card" style="background:var(--ink);">
+          <div class="dc-label" style="color:rgba(245,243,238,.4);">Target runtime</div>
+          <div class="dc-text" style="color:var(--white); font-weight:600; font-size:18px;">9 min 30 sec</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SLIDE 6 — PORTFOLIO
+  ══════════════════════════════════════ -->
+  <div class="slide slide-light" id="s6">
+    <div class="eyebrow anim" style="color:var(--muted); padding: 52px 8% 0;">Portfolio · Organic Growth Mode</div>
+    <div class="display anim" style="font-size:clamp(24px,3vw,36px); color:var(--ink); padding: 10px 8% 0;">
+      Maintaining. Nurturing. Watching.
+    </div>
+    <div class="port-grid anim" style="padding: 0 8%; height:calc(100% - 160px);">
+      <div class="port-card">
+        <div class="pc-head">
+          <span class="pc-emoji">🔮</span>
+          <span class="pc-name">GodGPT</span>
+        </div>
+        <span class="pill pill-done" style="width:fit-content;">Live</span>
+        <div class="pc-stat">51,016 users<br>$24,660 revenue</div>
+        <div class="pc-note">Maintenance phase. Organic posting and community engagement. Identifying the core spiritual wellness audience before scaling.</div>
+      </div>
+      <div class="port-card">
+        <div class="pc-head">
+          <span class="pc-emoji">🌱</span>
+          <span class="pc-name">SoulGarden</span>
+        </div>
+        <span class="pill pill-wip" style="width:fit-content;">Growing</span>
+        <div class="pc-stat">Gate 1: 91 / 200 users<br>46% to target</div>
+        <div class="pc-note">Community-led acquisition via WhatsApp. AI influencer pipeline active. Tracking source of every install to optimise the mix.</div>
+      </div>
+      <div class="port-card" style="border-color:rgba(216,90,48,.25);">
+        <div class="pc-head">
+          <span class="pc-emoji">⚡</span>
+          <span class="pc-name">Riteset</span>
+        </div>
+        <span class="pill pill-new" style="width:fit-content;">App Store Rejected</span>
+        <div class="pc-stat" style="color:var(--coral);">Rejected 20 Mar · Resubmitting</div>
+        <div class="pc-note">
+          <strong style="font-size:12px;">Fixes in progress:</strong><br>
+          Providing sandbox account so Apple can verify analytics behind paywall + paywall bypass method.<br>
+          Adding explicit medical advice disclaimer on the analysis page.
+        </div>
+      </div>
+      <div class="port-card" style="border-color:rgba(83,74,183,.2); background:var(--nyx-bg);">
+        <div class="pc-head">
+          <span class="pc-emoji">🧠</span>
+          <span class="pc-name">Sisyphus</span>
+        </div>
+        <span class="pill pill-new" style="width:fit-content;">Main Focus</span>
+        <div class="pc-stat">Actively building<br>Daily Aevatar syncs</div>
+        <div class="pc-note">Company's north star. Features and positioning in active development. Brand and product evolving together in real time.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SLIDE 7 — NORTH STAR / CLOSE
+  ══════════════════════════════════════ -->
+  <div class="slide slide-dark" id="s7">
+    <div class="glow"></div>
+    <div class="inner">
+      <div class="left">
+        <div class="eyebrow anim" style="color:rgba(245,243,238,.35);">ChronoAI · Brand Director · 21 March 2026</div>
+        <div class="display anim" style="font-size:clamp(28px,3.8vw,46px); color:var(--white);">
+          Build the platform.<br><em>Then the movement.</em>
+        </div>
+        <div class="principles anim">
+          <div class="principle">
+            <span class="p-icon">🏗️</span>
+            <span class="p-text"><strong>Product intelligence is live.</strong> NyxID and Ornn have a complete brand brain. Sisyphus is the main bet — embedded in the build as it takes shape.</span>
+          </div>
+          <div class="principle">
+            <span class="p-icon">⚙️</span>
+            <span class="p-text"><strong>Marketing runs on automation.</strong> The n8n CMO workflow is the foundation of a lean, always-on content operation. One system, daily output, zero queue.</span>
+          </div>
+          <div class="principle">
+            <span class="p-icon">🎤</span>
+            <span class="p-text"><strong>Community starts with a stage.</strong> What's Next Ep.1 is our first public signal — the opening move of an event series that turns builders into believers.</span>
+          </div>
+        </div>
+      </div>
+      <div class="quote-side anim">
+        <div class="q-text">"The people who are crazy enough to think they can change the world are the ones who do."</div>
+        <div class="q-attr">Steve Jobs · Stay Hungry, Stay Foolish · 2005</div>
+        <div style="margin-top:24px; padding-top:20px; border-top:1px solid rgba(255,255,255,.1);">
+          <div style="font-family:'DM Mono',monospace; font-size:10px; color:rgba(245,243,238,.3); letter-spacing:.1em; text-transform:uppercase; margin-bottom:10px;">Next focus</div>
+          <div style="font-family:'DM Serif Display',serif; font-size:18px; color:rgba(245,243,238,.7); line-height:1.5;">Sisyphus positioning locked.<br>What's Next Ep.1 on stage.<br>Automation scaling.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /deck -->
+
+<!-- NAV BAR -->
+<div class="nav-bar">
+  <span class="nav-counter" id="counter">01 / 07</span>
+  <span class="nav-title-sm" id="nav-title">Cover</span>
+  <div class="nav-arrows">
+    <button id="btn-prev" disabled>←</button>
+    <button id="btn-next">→</button>
+  </div>
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const total  = slides.length;
+let current  = 0;
+
+const titles = [
+  'Cover',
+  'Agenda',
+  'P1 · Product Intelligence',
+  'P2 · Automation',
+  'P3 · Community Event',
+  'Portfolio',
+  'North Star'
+];
+
+function goTo(n) {
+  slides[current].classList.remove('active');
+  current = Math.max(0, Math.min(total - 1, n));
+  slides[current].classList.add('active');
+  document.getElementById('counter').textContent =
+    String(current + 1).padStart(2,'0') + ' / ' + String(total).padStart(2,'0');
+  document.getElementById('nav-title').textContent = titles[current];
+  document.getElementById('btn-prev').disabled = current === 0;
+  document.getElementById('btn-next').disabled = current === total - 1;
+  document.getElementById('progress').style.width =
+    ((current + 1) / total * 100) + '%';
+}
+
+document.getElementById('btn-next').addEventListener('click', () => goTo(current + 1));
+document.getElementById('btn-prev').addEventListener('click', () => goTo(current - 1));
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') goTo(current + 1);
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')                    goTo(current - 1);
+});
+
+// Swipe support
+let tx = 0;
+document.addEventListener('touchstart', e => { tx = e.touches[0].clientX; });
+document.addEventListener('touchend',   e => {
+  const dx = e.changedTouches[0].clientX - tx;
+  if (Math.abs(dx) > 50) goTo(dx < 0 ? current + 1 : current - 1);
+});
+
+goTo(0);
+</script>
+</body>
+</html>
